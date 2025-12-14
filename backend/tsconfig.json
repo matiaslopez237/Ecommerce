@@ -11,7 +11,6 @@
     "moduleResolution": "bundler",
     "target": "es2020",
     "lib": ["es2020"],
-    "types": ["node"],
     // For nodejs:
     // and npm install -D @types/node (already installed)
 
