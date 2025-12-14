@@ -7,10 +7,10 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "es2020",
+    "module": "esnext",
     "moduleResolution": "node",
     "target": "es2020",
-    "lib": ["es2020"],
+    "lib": ["es2020", "dom"],
     // For nodejs:
     // and npm install -D @types/node (already installed)
 
@@ -36,7 +36,6 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "resolveJsonModule": true
