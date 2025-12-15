@@ -7,7 +7,7 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "CommonJS",
+    "module": "ES2020",
     "moduleResolution": "node",
     "target": "ES6",
     "lib": ["es2020", "dom"],
