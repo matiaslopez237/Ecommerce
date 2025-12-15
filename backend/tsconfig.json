@@ -7,9 +7,9 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "es2020",
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "target": "es2020",
+    "target": "ES6",
     "lib": ["es2020", "dom"],
     // For nodejs:
     // and npm install -D @types/node (already installed)
