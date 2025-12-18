@@ -3,12 +3,14 @@ import express from "express";
 import usersRoutes from "./routes/users.js";
 
 const app = express();
+app.use(express.json());
 
-app.get("/", (req, res) => {
+app.use("/users", usersRoutes);
+
+app.get("/", (_req, res) => {
   res.send("API funcionando");
 });
 
-const PORT = Number(process.env.PORT) || 3000;
-app.listen(PORT, () => console.log(`escuchando en el puerto: ${PORT}`));
-
-app.use("/users", usersRoutes);
+app.listen(3000, () => {
+  console.log("API escuchando en http://localhost:3000");
+});
