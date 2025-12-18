@@ -7,16 +7,16 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "ES2020",
-    "moduleResolution": "node",
-    "target": "ES6",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "NodeNext",
     "lib": ["es2020", "dom"],
     // For nodejs:
     // and npm install -D @types/node (already installed)
 
     // Other Outputs
     "sourceMap": true,
-    "declaration": true,
+    "declaration": false,
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
@@ -33,7 +33,7 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "isolatedModules": true,
+    "isolatedModules": false,
     "noUncheckedSideEffectImports": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
