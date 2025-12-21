@@ -7,6 +7,8 @@ import categoriesRoutes from "./routes/categories.js";
 import cartRoutes from "./routes/cart.js";
 import ordersRoutes from "./routes/orders.js";
 import adminOrdersRoutes from "./routes/adminOrders.js";
+import paymentsRoutes from "./routes/payments.js";
+import webhooksRoutes from "./routes/webhooks.js";
 
 const app = express();
 app.use(express.json());
@@ -28,6 +30,14 @@ app.use("/cart", cartRoutes);
 app.use("/orders", ordersRoutes);
 
 app.use("/admin/orders", adminOrdersRoutes);
+
+app.use("/payments", paymentsRoutes);
+
+app.use("/webhooks", webhooksRoutes);
+
+app.get("/payment/success", (_req, res) => res.send("Pago aprobado ✅"));
+app.get("/payment/failure", (_req, res) => res.send("Pago fallido ❌"));
+app.get("/payment/pending", (_req, res) => res.send("Pago pendiente ⏳"));
 
 app.listen(3000, () => {
   console.log("API escuchando en http://localhost:3000");
