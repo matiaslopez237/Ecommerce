@@ -4,32 +4,12 @@ import prisma from "../prisma.js";
 
 const router = Router();
 
-/**
- * Utilidad: devuelve el primer valor si viene como array (querystring).
- */
 function first<T>(v: T | T[] | undefined): T | undefined {
   return Array.isArray(v) ? v[0] : v;
 }
 
-/**
- * Valida firma de Mercado Pago si tenés MP_WEBHOOK_SECRET configurado.
- * Si NO tenés el secret, no valida (para no bloquearte en pruebas).
- *
- * MP manda headers:
- * - x-signature: "ts=...,v1=..."
- * - x-request-id: "..."
- *
- * Firma: HMAC SHA256(secret, `id:${id};request-id:${reqId};ts:${ts};`)
- */
-function verifyMercadoPagoSignature(req: Request, id: string): boolean {
-  const secret = process.env.MP_WEBHOOK_SECRET;
-  if (!secret) return true; // sin secret => no validamos (modo dev)
-
-  const xSignature = req.header("x-signature");
-  const xRequestId = req.header("x-request-id");
-  if (!xSignature || !xRequestId) return false;
-
-  // parse: ts=XXXX,v1=HASH
+function parseXSignature(xSignature: string) {
+  // formato: "ts=...,v1=..."
   const parts = xSignature.split(",").map((p) => p.trim());
   let ts: string | undefined;
   let v1: string | undefined;
@@ -40,130 +20,165 @@ function verifyMercadoPagoSignature(req: Request, id: string): boolean {
     if (k === "v1") v1 = val;
   }
 
-  if (!ts || !v1) return false;
+  if (!ts || !v1) return null;
+  return { ts, v1 };
+}
 
-  const manifest = `id:${id};request-id:${xRequestId};ts:${ts};`;
+function verifyMercadoPagoSignature(req: Request, id: string): boolean {
+  const secret = (process.env.MP_WEBHOOK_SECRET ?? "").trim();
+  if (!secret) return true; // si no configurás secret, no bloquea (modo dev)
+
+  const xSignature = req.header("x-signature");
+  const xRequestId = req.header("x-request-id");
+  if (!xSignature || !xRequestId) return false;
+
+  const parsed = parseXSignature(xSignature);
+  if (!parsed) return false;
+
+  const manifest = `id:${id};request-id:${xRequestId};ts:${parsed.ts};`;
   const expected = crypto
     .createHmac("sha256", secret)
     .update(manifest)
-    .digest("hex");
+    .digest("hex")
+    .toLowerCase();
 
-  // comparación segura
-  const a = Buffer.from(expected);
-  const b = Buffer.from(v1);
-  if (a.length !== b.length) return false;
-  return crypto.timingSafeEqual(a, b);
+  const received = parsed.v1.toLowerCase();
 
+  // comparación segura (si longitudes difieren, falla)
+  if (expected.length !== received.length) return false;
+
+  return crypto.timingSafeEqual(
+    Buffer.from(expected, "utf8"),
+    Buffer.from(received, "utf8")
+  );
+}
+
+async function fetchMerchantOrder(merchantOrderId: string) {
+  const token = process.env.MP_ACCESS_TOKEN;
+  if (!token) return null;
+
+  const resp = await fetch(
+    `https://api.mercadopago.com/merchant_orders/${merchantOrderId}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  if (!resp.ok) return null;
+  return resp.json();
+}
+
+async function fetchPayment(paymentId: string) {
+  const token = process.env.MP_ACCESS_TOKEN;
+  if (!token) return null;
+
+  const resp = await fetch(
+    `https://api.mercadopago.com/v1/payments/${paymentId}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  if (!resp.ok) return null;
+  return resp.json();
 }
 
 router.post("/mercadopago", async (req, res) => {
   try {
-    // MP puede mandar el id como:
-    // - ?data.id=123&type=payment
-    // - ?id=123&topic=payment
-    // - body: { data: { id: "123" }, type: "payment" }
     const q = req.query as Record<string, any>;
     const body: any = req.body ?? {};
 
-    const type = (first(q.type) ?? first(q.topic) ?? body.type ?? body.topic) as
-      | string
-      | undefined;
+    const type =
+      (first(q.type) ??
+        first(q.topic) ??
+        body.type ??
+        body.topic ??
+        undefined) as string | undefined;
 
     const notificationId =
-      first(q["data.id"]) ??
-      first(q.id) ??
-      body?.data?.id ??
-      body?.id ??
-      null;
+      first(q["data.id"]) ?? first(q.id) ?? body?.data?.id ?? body?.id ?? null;
 
     if (!notificationId) {
-      // Nada que procesar
       return res.sendStatus(200);
     }
 
     const notifIdStr = String(notificationId);
 
-    // Firma (si tenés secret configurado)
-    if (!verifyMercadoPagoSignature(req, notifIdStr)) {
+    console.log("MP webhook HIT", {
+      type,
+      notificationId: notifIdStr,
+      hasSignature: Boolean(req.header("x-signature")),
+      hasRequestId: Boolean(req.header("x-request-id")),
+    });
+
+    // 1) Validar firma con el ID que llega en la notificación
+    let signatureOk = verifyMercadoPagoSignature(req, notifIdStr);
+
+    // 2) Si vino merchant_order y falla, intentamos validar con el paymentId (fallback)
+    // (algunas integraciones reportan que MP firma con paymentId en ciertos casos)
+    let merchantOrder: any = null;
+    if (!signatureOk && type === "merchant_order") {
+      merchantOrder = await fetchMerchantOrder(notifIdStr);
+      const approved =
+        (merchantOrder?.payments ?? []).find((p: any) => p?.status === "approved") ??
+        (merchantOrder?.payments ?? [])[0];
+
+      const candidatePaymentId = approved?.id ? String(approved.id) : null;
+
+      if (candidatePaymentId) {
+        signatureOk = verifyMercadoPagoSignature(req, candidatePaymentId);
+      }
+    }
+
+    if (!signatureOk) {
+      console.log("MP signature INVALID", { type, notificationId: notifIdStr });
       return res.status(401).json({ error: "Firma inválida" });
     }
 
-    // Si llega merchant_order, primero buscamos un paymentId real
+    // Resolver paymentId
     let paymentId = notifIdStr;
 
     if (type === "merchant_order") {
-      const moResp = await fetch(
-        `https://api.mercadopago.com/merchant_orders/${notifIdStr}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-          },
-        }
-      );
-
-      if (!moResp.ok) {
-        console.log("MP merchant_order fetch failed", moResp.status);
-        return res.sendStatus(200);
-      }
-
-      const mo = await moResp.json();
-
-      // Preferimos uno approved, sino el primero
+      merchantOrder = merchantOrder ?? (await fetchMerchantOrder(notifIdStr));
       const approved =
-        (mo?.payments ?? []).find((p: any) => p?.status === "approved") ??
-        (mo?.payments ?? [])[0];
+        (merchantOrder?.payments ?? []).find((p: any) => p?.status === "approved") ??
+        (merchantOrder?.payments ?? [])[0];
 
       if (!approved?.id) return res.sendStatus(200);
       paymentId = String(approved.id);
     } else {
-      // si type viene vacío, igual intentamos tratarlo como payment
-      // y también aceptamos type=payment
-      if (type && type !== "payment") {
-        // otros eventos que no manejamos
-        return res.sendStatus(200);
-      }
+      // si type viene vacío, lo tratamos como payment
+      if (type && type !== "payment") return res.sendStatus(200);
     }
 
-    // Consultamos el pago real
-    const paymentResp = await fetch(
-      `https://api.mercadopago.com/v1/payments/${paymentId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-        },
-      }
-    );
-
-    if (!paymentResp.ok) {
-      console.log("MP payment fetch failed", paymentResp.status);
+    const payment = await fetchPayment(paymentId);
+    if (!payment) {
+      console.log("MP payment fetch FAILED", { paymentId });
       return res.sendStatus(200);
     }
 
-    const payment = await paymentResp.json();
-
-    const status = String(payment?.status ?? "");
-    const externalRef = payment?.external_reference ?? payment?.metadata?.orderId;
+    const mpStatus = String(payment?.status ?? "");
+    const externalRef =
+      payment?.external_reference ??
+      payment?.metadata?.orderId ??
+      payment?.metadata?.order_id;
 
     const orderId = Number(externalRef);
     if (!orderId || Number.isNaN(orderId)) {
-      console.log("No pude obtener orderId desde external_reference/metadata", {
-        externalRef,
+      console.log("MP cannot resolve orderId", {
         paymentId,
-        status,
+        mpStatus,
+        externalRef,
       });
       return res.sendStatus(200);
     }
 
-    // Mapeo de estados MP -> OrderStatus (tu schema)
     const targetStatus =
-      status === "approved"
+      mpStatus === "approved"
         ? "PAID"
-        : ["cancelled", "rejected", "charged_back", "refunded"].includes(status)
+        : ["cancelled", "rejected", "charged_back", "refunded"].includes(mpStatus)
           ? "CANCELLED"
           : null;
 
     if (!targetStatus) {
-      // pending / in_process / etc => no tocamos la orden
+      // pending / in_process / etc.
+      console.log("MP status ignored", { paymentId, mpStatus, orderId });
       return res.sendStatus(200);
     }
 
@@ -172,45 +187,44 @@ router.post("/mercadopago", async (req, res) => {
         where: { id: orderId },
         include: { items: true },
       });
-
       if (!ord) return;
 
-      // idempotencia
       if (ord.status === targetStatus) return;
 
       if (targetStatus === "PAID") {
-        // Solo marcamos PAID si estaba pendiente (o no estaba pagada)
-        await tx.order.update({
-          where: { id: orderId },
-          data: { status: "PAID" },
-        });
+        // solo marcamos PAID si estaba PENDING
+        if (ord.status === "PENDING") {
+          await tx.order.update({
+            where: { id: orderId },
+            data: { status: "PAID" },
+          });
+        }
         return;
       }
 
-      if (targetStatus === "CANCELLED") {
-        // Si cancelás una reserva: reponemos stock SOLO si no estaba pagada
-        if (ord.status !== "PAID") {
-          for (const it of ord.items) {
-            await tx.product.update({
-              where: { id: it.productId },
-              data: { stock: { increment: it.quantity } },
-            });
-          }
+      // CANCELLED
+      if (ord.status !== "PAID") {
+        // reponer stock si no estaba pagada
+        for (const it of ord.items) {
+          await tx.product.update({
+            where: { id: it.productId },
+            data: { stock: { increment: it.quantity } },
+          });
         }
-
-        await tx.order.update({
-          where: { id: orderId },
-          data: { status: "CANCELLED" },
-        });
       }
+
+      await tx.order.update({
+        where: { id: orderId },
+        data: { status: "CANCELLED" },
+      });
     });
 
-    console.log("MP webhook OK", { type, paymentId, status, orderId });
+    console.log("MP webhook OK", { type, paymentId, mpStatus, orderId, targetStatus });
 
     return res.sendStatus(200);
   } catch (err) {
-    console.log("MP webhook error", err);
-    // importante: responder 200 para que no te mate con reintentos mientras debuggeás
+    console.log("MP webhook ERROR", err);
+    // para que no te masacre con reintentos mientras debuggeás
     return res.sendStatus(200);
   }
 });
