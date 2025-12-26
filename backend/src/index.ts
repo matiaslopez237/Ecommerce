@@ -9,6 +9,7 @@ import ordersRoutes from "./routes/orders.js";
 import adminOrdersRoutes from "./routes/adminOrders.js";
 import paymentsRoutes from "./routes/payments.js";
 import webhooksRoutes from "./routes/webhooks.js";
+import adminPaymentsRoutes from "./routes/adminPayments.js";
 
 const app = express();
 app.use(express.json());
@@ -41,6 +42,8 @@ app.get("/payment/pending", (_req, res) => res.send("Pago pendiente ⏳"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/admin/payments", adminPaymentsRoutes);
 
 app.listen(3000, () => {
   console.log("API escuchando en http://localhost:3000");

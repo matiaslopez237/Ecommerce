@@ -102,15 +102,35 @@ enum PaymentProvider {
 }
 
 model Payment {
-  id               Int             @id @default(autoincrement())
-  provider         PaymentProvider
-  orderId          Int             @unique
-  preferenceId     String?         @unique
-  providerPaymentId String?        @unique
-  status           String?
-  raw              Json?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @default(now()) @updatedAt
+  id                Int             @id @default(autoincrement())
+  provider          PaymentProvider @default(MERCADOPAGO)
 
-  order            Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId           Int             @unique
+  preferenceId      String?         @unique
+
+  // Mercado Pago
+  providerPaymentId String?         @unique   // mp payment id (payment.id)
+  merchantOrderId   String?                   // mp merchant_order id (si viene)
+
+  // estado MP
+  status            String?                   // ej: created / approved / rejected / cancelled / in_process / pending
+  statusDetail      String?                   // ej: accredited, cc_rejected_* ...
+
+  // auditoría de montos
+  amount            Decimal         @db.Decimal(10, 2) @default(0)
+  currency          String          @default("ARS")
+
+  // raw JSONs
+  raw               Json?                     // guardamos la PREFERENCIA (checkout/preferences response)
+  rawPayment         Json?                    // guardamos el PAYMENT (v1/payments response)
+
+  paidAt            DateTime?
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @default(now()) @updatedAt
+
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([providerPaymentId])
+  @@index([merchantOrderId])
 }

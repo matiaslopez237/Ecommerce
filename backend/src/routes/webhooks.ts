@@ -53,63 +53,31 @@ function isHexString(s: string) {
  */
 function verifyMercadoPagoSignature(req: Request, id: string): { ok: boolean; reason?: string } {
   const rawSecret = process.env.MP_WEBHOOK_SECRET;
-  if (!rawSecret || !rawSecret.trim()) {
-    // Si no configuraste secret, no bloqueamos (modo dev)
-    return { ok: true };
-  }
+  if (!rawSecret || !rawSecret.trim()) return { ok: true }; // dev mode
 
   const secret = cleanSecret(rawSecret);
 
   const xSignature = req.header("x-signature");
   const xRequestId = req.header("x-request-id");
-
-  if (!xSignature || !xRequestId) {
-    return { ok: false, reason: "missing x-signature / x-request-id" };
-  }
+  if (!xSignature || !xRequestId) return { ok: false, reason: "missing headers" };
 
   const parsed = parseXSignature(xSignature);
   if (!parsed) return { ok: false, reason: "bad x-signature format" };
 
   const manifest = `id:${id};request-id:${xRequestId};ts:${parsed.ts};`;
 
-  const receivedRaw = parsed.v1.trim();
-  const receivedLower = receivedRaw.toLowerCase();
+  const expectedHex = crypto.createHmac("sha256", secret).update(manifest).digest("hex");
+  const receivedHex = parsed.v1.trim().toLowerCase();
 
-  // Candidatos esperados usando secret como TEXTO
-  const expectedHex_textKey = crypto.createHmac("sha256", secret).update(manifest).digest("hex");
-  const expectedB64_textKey = crypto.createHmac("sha256", secret).update(manifest).digest("base64");
+  // asegurar hex válido + comparación segura
+  if (!isHexString(receivedHex)) return { ok: false, reason: "received v1 is not hex" };
 
-  // Candidatos esperados usando secret como BYTES (si parece hex)
-  const expectedHex_hexKey: string | null = isHexString(secret)
-    ? crypto.createHmac("sha256", Buffer.from(secret, "hex")).update(manifest).digest("hex")
-    : null;
+  const ok = safeEqualBytes(
+    Buffer.from(expectedHex, "hex"),
+    Buffer.from(receivedHex, "hex")
+  );
 
-  const expectedB64_hexKey: string | null = isHexString(secret)
-    ? crypto.createHmac("sha256", Buffer.from(secret, "hex")).update(manifest).digest("base64")
-    : null;
-
-  // Si lo recibido parece hex, comparamos como hex-bytes
-  if (isHexString(receivedRaw)) {
-    const recBuf = Buffer.from(receivedLower, "hex");
-
-    const candidates = [expectedHex_textKey, expectedHex_hexKey].filter(Boolean) as string[];
-    for (const cand of candidates) {
-      const candBuf = Buffer.from(cand.toLowerCase(), "hex");
-      if (safeEqualBytes(candBuf, recBuf)) return { ok: true };
-    }
-    return { ok: false, reason: "hex signature mismatch" };
-  }
-
-  // Si NO parece hex, comparamos como base64 (string-bytes)
-  {
-    const recBuf = Buffer.from(receivedRaw, "utf8");
-    const candidates = [expectedB64_textKey, expectedB64_hexKey].filter(Boolean) as string[];
-    for (const cand of candidates) {
-      const candBuf = Buffer.from(cand, "utf8");
-      if (safeEqualBytes(candBuf, recBuf)) return { ok: true };
-    }
-    return { ok: false, reason: "base64 signature mismatch" };
-  }
+  return ok ? { ok: true } : { ok: false, reason: "signature mismatch" };
 }
 
 async function fetchMerchantOrder(merchantOrderId: string) {
@@ -224,6 +192,48 @@ router.post("/mercadopago", async (req, res) => {
         include: { items: true },
       });
       if (!ord) return;
+
+      const mpPaymentId = String(payment?.id ?? paymentId);
+      const mpStatusNow = String(payment?.status ?? "");
+      const mpStatusDetail = payment?.status_detail ? String(payment.status_detail) : null;
+
+      // merchant order id si viene
+      const mpMerchantOrderId =
+        payment?.order?.id ? String(payment.order.id) :
+        (type === "merchant_order" ? String(notifIdStr) : null);
+
+      const paidAtValue = mpStatusNow === "approved" ? new Date() : null;
+
+      await tx.payment.upsert({
+        where: { orderId },
+        create: {
+          provider: "MERCADOPAGO",
+          orderId,
+          providerPaymentId: mpPaymentId,
+          merchantOrderId: mpMerchantOrderId,
+          status: mpStatusNow,
+          statusDetail: mpStatusDetail,
+          amount: ord.total,
+          currency: String(payment?.currency_id ?? "ARS"),
+          rawPayment: payment,
+          paidAt: paidAtValue, // en create sí puede ir null
+        },
+        update: {
+          providerPaymentId: mpPaymentId,
+          merchantOrderId: mpMerchantOrderId,
+          status: mpStatusNow,
+          statusDetail: mpStatusDetail,
+          amount: ord.total,
+          currency: String(payment?.currency_id ?? "ARS"),
+          rawPayment: payment,
+
+          // 👇 NO mandamos undefined nunca:
+          ...(mpStatusNow === "approved" ? { paidAt: new Date() } : {}),
+          // opcional: si querés que al cancelarse se borre paidAt:
+          // ...(mpStatusNow !== "approved" ? { paidAt: null } : {}),
+        },
+      });
+
 
       // idempotente
       if (ord.status === targetStatus) return;

@@ -77,20 +77,24 @@ router.post("/mercadopago/checkout", async (req, res) => {
   const data = await resp.json(); // suele traer: id (preferenceId), init_point, sandbox_init_point
 
   await prisma.payment.upsert({
-    where: { orderId: order.id },
-    create: {
-      provider: "MERCADOPAGO",
-      orderId: order.id,
-      preferenceId: data.id,
-      status: "created",
-      raw: data,
-    },
-    update: {
-      preferenceId: data.id,
-      status: "created",
-      raw: data,
-    },
-  });
+  where: { orderId: order.id },
+  create: {
+    provider: "MERCADOPAGO",
+    orderId: order.id,
+    preferenceId: data.id,
+    status: "created",
+    amount: order.total,
+    currency: "ARS",
+    raw: data, // preferencia
+  },
+  update: {
+    preferenceId: data.id,
+    status: "created",
+    amount: order.total,
+    currency: "ARS",
+    raw: data, // preferencia
+  },
+});
 
   res.json({
     preferenceId: data.id,
