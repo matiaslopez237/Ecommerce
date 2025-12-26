@@ -39,6 +39,9 @@ app.get("/payment/success", (_req, res) => res.send("Pago aprobado ✅"));
 app.get("/payment/failure", (_req, res) => res.send("Pago fallido ❌"));
 app.get("/payment/pending", (_req, res) => res.send("Pago pendiente ⏳"));
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.listen(3000, () => {
   console.log("API escuchando en http://localhost:3000");
 });

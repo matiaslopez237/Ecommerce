@@ -98,5 +98,5 @@ router.post("/mercadopago/checkout", async (req, res) => {
     sandbox_init_point: data.sandbox_init_point,
   });
 });
-
+  
 export default router;

@@ -1,12 +1,35 @@
-import { Router } from "express";
+import { Router, type Request } from "express";
 import crypto from "crypto";
 import prisma from "../prisma.js";
 
 const router = Router();
 
-function parseXSignature(xSignature: string | undefined) {
-  if (!xSignature) return null;
-  // formato típico: "ts=...,v1=..."
+/**
+ * Utilidad: devuelve el primer valor si viene como array (querystring).
+ */
+function first<T>(v: T | T[] | undefined): T | undefined {
+  return Array.isArray(v) ? v[0] : v;
+}
+
+/**
+ * Valida firma de Mercado Pago si tenés MP_WEBHOOK_SECRET configurado.
+ * Si NO tenés el secret, no valida (para no bloquearte en pruebas).
+ *
+ * MP manda headers:
+ * - x-signature: "ts=...,v1=..."
+ * - x-request-id: "..."
+ *
+ * Firma: HMAC SHA256(secret, `id:${id};request-id:${reqId};ts:${ts};`)
+ */
+function verifyMercadoPagoSignature(req: Request, id: string): boolean {
+  const secret = process.env.MP_WEBHOOK_SECRET;
+  if (!secret) return true; // sin secret => no validamos (modo dev)
+
+  const xSignature = req.header("x-signature");
+  const xRequestId = req.header("x-request-id");
+  if (!xSignature || !xRequestId) return false;
+
+  // parse: ts=XXXX,v1=HASH
   const parts = xSignature.split(",").map((p) => p.trim());
   let ts: string | undefined;
   let v1: string | undefined;
@@ -16,123 +39,180 @@ function parseXSignature(xSignature: string | undefined) {
     if (k === "ts") ts = val;
     if (k === "v1") v1 = val;
   }
-  if (!ts || !v1) return null;
-  return { ts, v1 };
-}
 
-function getNotificationId(req: any): string | undefined {
-  // MP puede mandar en query: data.id / id, o en body: { data: { id } }
-  return (
-    req.query?.["data.id"] ||
-    req.query?.["data_id"] ||
-    req.query?.["id"] ||
-    req.body?.data?.id
-  )?.toString();
+  if (!ts || !v1) return false;
+
+  const manifest = `id:${id};request-id:${xRequestId};ts:${ts};`;
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(manifest)
+    .digest("hex");
+
+  // comparación segura
+  const a = Buffer.from(expected);
+  const b = Buffer.from(v1);
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+
 }
 
 router.post("/mercadopago", async (req, res) => {
-  const notificationId = getNotificationId(req);
-  const type = (req.query?.type || req.query?.topic || req.body?.type || "").toString();
+  try {
+    // MP puede mandar el id como:
+    // - ?data.id=123&type=payment
+    // - ?id=123&topic=payment
+    // - body: { data: { id: "123" }, type: "payment" }
+    const q = req.query as Record<string, any>;
+    const body: any = req.body ?? {};
 
-  // Respondé rápido aunque no puedas procesar (MP reintenta)
-  if (!notificationId) return res.sendStatus(200);
+    const type = (first(q.type) ?? first(q.topic) ?? body.type ?? body.topic) as
+      | string
+      | undefined;
 
-  // Validación de firma (HMAC SHA256 con manifest: id:...;request-id:...;ts:...;)
-  // Se usa x-signature + x-request-id + secret. :contentReference[oaicite:4]{index=4}
-  const secret = process.env.MP_WEBHOOK_SECRET;
-  const xSignature = req.headers["x-signature"]?.toString();
-  const xRequestId = req.headers["x-request-id"]?.toString();
+    const notificationId =
+      first(q["data.id"]) ??
+      first(q.id) ??
+      body?.data?.id ??
+      body?.id ??
+      null;
 
-  if (secret && xSignature && xRequestId) {
-    const parsed = parseXSignature(xSignature);
-    if (!parsed) return res.sendStatus(401);
-
-    const manifest = `id:${notificationId};request-id:${xRequestId};ts:${parsed.ts};`;
-    const expected = crypto.createHmac("sha256", secret).update(manifest).digest("hex");
-
-    if (expected.toLowerCase() !== parsed.v1.toLowerCase()) {
-      return res.sendStatus(401);
-    }
-  }
-
-  // Solo procesamos pagos (si te llega merchant_order lo podés ignorar o ampliar)
-  if (type && type !== "payment") {
-    return res.sendStatus(200);
-  }
-
-  const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN!;
-  if (!MP_ACCESS_TOKEN) return res.sendStatus(200);
-
-  // Confirmá el pago consultando la API por ID :contentReference[oaicite:5]{index=5}
-  const mpResp = await fetch(`https://api.mercadopago.com/v1/payments/${notificationId}`, {
-    headers: { Authorization: `Bearer ${MP_ACCESS_TOKEN}` },
-  });
-
-  if (!mpResp.ok) return res.sendStatus(200);
-
-  const payment = await mpResp.json();
-  const externalRef = payment.external_reference; // nosotros pusimos order.id acá
-  const paymentStatus = (payment.status || "").toString(); // approved, rejected, cancelled, etc.
-
-  const orderId = Number(externalRef);
-  if (!Number.isFinite(orderId)) return res.sendStatus(200);
-
-  // Estado destino según MP
-  const target =
-    paymentStatus === "approved"
-      ? "PAID"
-      : ["cancelled", "rejected", "expired"].includes(paymentStatus)
-      ? "CANCELLED"
-      : null;
-
-  await prisma.$transaction(async (tx) => {
-    const order = await tx.order.findUnique({
-      where: { id: orderId },
-      include: { items: true },
-    });
-    if (!order) return;
-
-    // Guardar/actualizar payment (idempotente)
-    await tx.payment.upsert({
-      where: { orderId: order.id },
-      create: {
-        provider: "MERCADOPAGO",
-        orderId: order.id,
-        providerPaymentId: String(payment.id),
-        status: paymentStatus,
-        raw: payment,
-      },
-      update: {
-        providerPaymentId: String(payment.id),
-        status: paymentStatus,
-        raw: payment,
-      },
-    });
-
-    // Solo cambiar si está PENDING (idempotencia)
-    if (!target || order.status !== "PENDING") return;
-
-    // (opcional) Validar monto: transaction_amount vs order.total
-    // si no coincide, NO lo marques pagado:
-    // const amountOk = Number(payment.transaction_amount) === Number(order.total.toString());
-
-    if (target === "PAID") {
-      await tx.order.update({ where: { id: order.id }, data: { status: "PAID" } });
+    if (!notificationId) {
+      // Nada que procesar
+      return res.sendStatus(200);
     }
 
-    if (target === "CANCELLED") {
-      // Reponer stock si cancelás una reserva
-      for (const it of order.items) {
-        await tx.product.update({
-          where: { id: it.productId },
-          data: { stock: { increment: it.quantity } },
+    const notifIdStr = String(notificationId);
+
+    // Firma (si tenés secret configurado)
+    if (!verifyMercadoPagoSignature(req, notifIdStr)) {
+      return res.status(401).json({ error: "Firma inválida" });
+    }
+
+    // Si llega merchant_order, primero buscamos un paymentId real
+    let paymentId = notifIdStr;
+
+    if (type === "merchant_order") {
+      const moResp = await fetch(
+        `https://api.mercadopago.com/merchant_orders/${notifIdStr}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+          },
+        }
+      );
+
+      if (!moResp.ok) {
+        console.log("MP merchant_order fetch failed", moResp.status);
+        return res.sendStatus(200);
+      }
+
+      const mo = await moResp.json();
+
+      // Preferimos uno approved, sino el primero
+      const approved =
+        (mo?.payments ?? []).find((p: any) => p?.status === "approved") ??
+        (mo?.payments ?? [])[0];
+
+      if (!approved?.id) return res.sendStatus(200);
+      paymentId = String(approved.id);
+    } else {
+      // si type viene vacío, igual intentamos tratarlo como payment
+      // y también aceptamos type=payment
+      if (type && type !== "payment") {
+        // otros eventos que no manejamos
+        return res.sendStatus(200);
+      }
+    }
+
+    // Consultamos el pago real
+    const paymentResp = await fetch(
+      `https://api.mercadopago.com/v1/payments/${paymentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        },
+      }
+    );
+
+    if (!paymentResp.ok) {
+      console.log("MP payment fetch failed", paymentResp.status);
+      return res.sendStatus(200);
+    }
+
+    const payment = await paymentResp.json();
+
+    const status = String(payment?.status ?? "");
+    const externalRef = payment?.external_reference ?? payment?.metadata?.orderId;
+
+    const orderId = Number(externalRef);
+    if (!orderId || Number.isNaN(orderId)) {
+      console.log("No pude obtener orderId desde external_reference/metadata", {
+        externalRef,
+        paymentId,
+        status,
+      });
+      return res.sendStatus(200);
+    }
+
+    // Mapeo de estados MP -> OrderStatus (tu schema)
+    const targetStatus =
+      status === "approved"
+        ? "PAID"
+        : ["cancelled", "rejected", "charged_back", "refunded"].includes(status)
+          ? "CANCELLED"
+          : null;
+
+    if (!targetStatus) {
+      // pending / in_process / etc => no tocamos la orden
+      return res.sendStatus(200);
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const ord = await tx.order.findUnique({
+        where: { id: orderId },
+        include: { items: true },
+      });
+
+      if (!ord) return;
+
+      // idempotencia
+      if (ord.status === targetStatus) return;
+
+      if (targetStatus === "PAID") {
+        // Solo marcamos PAID si estaba pendiente (o no estaba pagada)
+        await tx.order.update({
+          where: { id: orderId },
+          data: { status: "PAID" },
+        });
+        return;
+      }
+
+      if (targetStatus === "CANCELLED") {
+        // Si cancelás una reserva: reponemos stock SOLO si no estaba pagada
+        if (ord.status !== "PAID") {
+          for (const it of ord.items) {
+            await tx.product.update({
+              where: { id: it.productId },
+              data: { stock: { increment: it.quantity } },
+            });
+          }
+        }
+
+        await tx.order.update({
+          where: { id: orderId },
+          data: { status: "CANCELLED" },
         });
       }
-      await tx.order.update({ where: { id: order.id }, data: { status: "CANCELLED" } });
-    }
-  });
+    });
 
-  res.sendStatus(200);
+    console.log("MP webhook OK", { type, paymentId, status, orderId });
+
+    return res.sendStatus(200);
+  } catch (err) {
+    console.log("MP webhook error", err);
+    // importante: responder 200 para que no te mate con reintentos mientras debuggeás
+    return res.sendStatus(200);
+  }
 });
 
 export default router;
