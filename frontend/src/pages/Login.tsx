@@ -3,12 +3,13 @@ import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login, user } = useAuth();
+  const { login, user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
+  
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -28,11 +29,29 @@ export default function Login() {
     return (
       <div style={{ maxWidth: 360, margin: "40px auto", fontFamily: "sans-serif" }}>
         <h2>Login</h2>
-        <p>Ya estás logueado como <b>{user.email}</b></p>
-        <p>Andá a <b>Me</b> o apretá <b>Logout</b>.</p>
+        <p>
+          Ya estás logueado como <b>{user.email}</b>
+        </p>
+
+        <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+          <button
+            onClick={() => navigate("/me")}
+            style={{ flex: 1, padding: 10 }}
+          >
+            Ir a Me
+          </button>
+
+          <button
+            onClick={logout}
+            style={{ flex: 1, padding: 10 }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
     );
   }
+
 
   return (
     <div style={{ maxWidth: 360, margin: "40px auto", fontFamily: "sans-serif" }}>

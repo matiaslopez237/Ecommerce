@@ -35,7 +35,27 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/me", requireAuth, async (req, res) => {
-  return res.json({ user: (req as any).user });
+  const payload = (req as any).user as { sub?: number | string };
+
+  const userId = Number(payload?.sub);
+  if (!userId) return res.status(401).json({ error: "No autorizado" });
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      points: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!user) return res.status(404).json({ error: "Usuario no existe" });
+
+  return res.json({ user });
 });
+
 
 export default router;

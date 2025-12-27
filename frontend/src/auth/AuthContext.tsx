@@ -2,11 +2,14 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../api/client";
 
 type MeUser = {
-  sub: number;
+  id: number;
   email: string;
-  iat: number;
-  exp: number;
+  points: number;
+  role: "USER" | "ADMIN";
+  createdAt: string;
+  updatedAt?: string;
 };
+
 
 type AuthContextType = {
   user: MeUser | null;
