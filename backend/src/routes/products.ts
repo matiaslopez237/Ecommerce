@@ -47,12 +47,13 @@ router.get("/:id", async (req, res) => {
 // POST /products (ADMIN)
 router.post("/", requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { name, description, price, stock, categoryId } = req.body as {
+    const { name, description, price, stock, categoryId, imageUrl } = req.body as {
       name?: string;
       description?: string;
       price?: string | number;
       stock?: number;
       categoryId?: number | null;
+      imageUrl?: string | null;
     };
 
     if (!name?.trim()) return res.status(400).json({ error: "name es requerido" });
@@ -63,6 +64,9 @@ router.post("/", requireAuth, requireAdmin, async (req, res) => {
     if (!Number.isFinite(priceNum)) return res.status(400).json({ error: "price inválido" });
 
     const stockInt = stock ?? 0;
+    if (!Number.isFinite(stockInt) || stockInt < 0) {
+      return res.status(400).json({ error: "stock inválido" });
+    }
 
     const product = await prisma.product.create({
       data: {
@@ -71,6 +75,7 @@ router.post("/", requireAuth, requireAdmin, async (req, res) => {
         price: priceStr, // Decimal -> ok como string
         stock: stockInt,
         categoryId: categoryId ?? null,
+        imageUrl: imageUrl && imageUrl.trim() !== "" ? imageUrl.trim() : null, // ✅ NUEVO
       },
       include: { category: { select: { id: true, name: true } } },
     });
@@ -87,18 +92,25 @@ router.patch("/:id", requireAuth, requireAdmin, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) return res.status(400).json({ error: "ID inválido" });
 
-  const { name, description, price, stock, categoryId } = req.body as {
+  const { name, description, price, stock, categoryId, imageUrl } = req.body as {
     name?: string;
     description?: string | null;
     price?: string | number;
     stock?: number;
     categoryId?: number | null;
+    imageUrl?: string | null;
   };
 
   const data: Prisma.ProductUpdateInput = {};
 
-  if (name !== undefined) data.name = name.trim();
-  if (description !== undefined) data.description = description === null ? null : description.trim();
+  if (name !== undefined) {
+    if (!name.trim()) return res.status(400).json({ error: "name inválido" });
+    data.name = name.trim();
+  }
+
+  if (description !== undefined) {
+    data.description = description === null ? null : description.trim();
+  }
 
   if (price !== undefined) {
     const priceStr = typeof price === "number" ? String(price) : price;
@@ -107,8 +119,23 @@ router.patch("/:id", requireAuth, requireAdmin, async (req, res) => {
     data.price = priceStr as any; // Prisma acepta string para Decimal
   }
 
-  if (stock !== undefined) data.stock = stock;
-  if (categoryId !== undefined) data.category = categoryId === null ? { disconnect: true } : { connect: { id: categoryId } };
+  if (stock !== undefined) {
+    if (!Number.isFinite(stock) || stock < 0) return res.status(400).json({ error: "stock inválido" });
+    data.stock = stock;
+  }
+
+  if (categoryId !== undefined) {
+    data.category =
+      categoryId === null ? { disconnect: true } : { connect: { id: categoryId } };
+  }
+
+  // ✅ NUEVO: imageUrl
+  if (imageUrl !== undefined) {
+    data.imageUrl = imageUrl === null ? null : imageUrl.trim();
+    if (typeof data.imageUrl === "string" && data.imageUrl.trim() === "") {
+      data.imageUrl = null; // si mandan "" lo dejamos en null
+    }
+  }
 
   try {
     const updated = await prisma.product.update({
