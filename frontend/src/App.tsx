@@ -5,12 +5,16 @@ import { AuthProvider, useAuth } from "./auth/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
-
 import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
+import AdminRoute from "./routes/AdminRoute";
+import AdminProducts from "./pages/AdminProducts";
+import AdminProductEdit from "./pages/AdminProductEdit";
+
 
 function Nav() {
   const { user, logout } = useAuth();
+  {user?.role === "ADMIN" && <Link to="/admin/products">Admin</Link>}
 
   return (
     <nav style={{ padding: 12, display: "flex", gap: 12, alignItems: "center" }}>
@@ -81,6 +85,25 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/admin/products"
+            element={
+              <AdminRoute>
+                <AdminProducts />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/products/:id"
+            element={
+              <AdminRoute>
+                <AdminProductEdit />
+              </AdminRoute>
+            }
+          />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>
