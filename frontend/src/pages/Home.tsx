@@ -1,40 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "../api/client";
-
-type Product = {
-  id: number;
-  name: string;
-  price: number | string;
-  imageUrl?: string | null;
-  category?: { name: string } | null;
-  description?: string | null;
-};
-
-const SPECIALISTS = [
-  "Medicina General",
-  "Cardiología",
-  "Pediatría",
-  "Dermatología",
-  "Traumatología",
-  "Laboratorio",
-  "Ginecología",
-  "Oftalmología",
-  "Neurología",
-  "Nutrición",
-  "Psicología",
-];
+import { SERVICIOS, WA_LINK } from "../constants/servicios";
+import TurnoBtn from "../components/TurnoBtn";
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [activeTab, setActiveTab] = useState<"destacados" | "nuevos">("destacados");
   const [heroDot, setHeroDot] = useState(0);
-
-  useEffect(() => {
-    api.get("/products").then((r) => setProducts(r.data)).catch(() => {});
-  }, []);
-
-  const displayed = products.slice(0, 4);
 
   const heroSlides = [
     {
@@ -42,23 +12,26 @@ export default function Home() {
       title: "TU SALUD,\nNUESTRA\nPRIORIDAD",
       subtitle: "Especialistas comprometidos con tu bienestar",
       cta: "Reservar Turno",
+      ctaHref: WA_LINK,
       bg: "linear-gradient(130deg, #f5e8ef 0%, #f9d5e5 30%, #C82560 75%, #8c1940 100%)",
       leftText: "SALUD",
     },
     {
-      eyebrow: "Nuevos Servicios",
-      title: "ATENCIÓN\nDE\nEXCELENCIA",
-      subtitle: "Diagnóstico preciso, tratamientos de calidad",
+      eyebrow: "Estética y Bienestar",
+      title: "BELLEZA\nY\nSALUD",
+      subtitle: "Tratamientos faciales, corporales y láser de última generación",
       cta: "Ver Servicios",
-      bg: "linear-gradient(130deg, #e8f0fc 0%, #c8d8f8 30%, #2560C8 75%, #194090 100%)",
+      ctaHref: "/servicios/estetica-facial",
+      bg: "linear-gradient(130deg, #f5e8ef 0%, #f9d5e5 30%, #C82560 75%, #8c1940 100%)",
       leftText: "VIDA",
     },
     {
-      eyebrow: "Chequeo Preventivo",
+      eyebrow: "Prevención y Cuidado",
       title: "PREVENIR\nES\nCUIDAR",
-      subtitle: "Planes de salud integrales para toda la familia",
-      cta: "Ver Planes",
-      bg: "linear-gradient(130deg, #e8fce8 0%, #c8f0c8 30%, #25A860 75%, #188040 100%)",
+      subtitle: "Ginecología, medicina general y más especialidades",
+      cta: "Ver Especialidades",
+      ctaHref: "/servicios/ginecologia",
+      bg: "linear-gradient(130deg, #f5e8ef 0%, #f9d5e5 30%, #C82560 75%, #8c1940 100%)",
       leftText: "BIEN",
     },
   ];
@@ -72,18 +45,9 @@ export default function Home() {
         className="hero-section"
         style={{ background: slide.bg, transition: "background 0.6s" }}
       >
-        <div
-          className="hero-decor-circle"
-          style={{ width: 340, height: 340, top: -80, left: -60 }}
-        />
-        <div
-          className="hero-decor-circle"
-          style={{ width: 200, height: 200, top: 40, left: 200 }}
-        />
-        <div
-          className="hero-decor-circle"
-          style={{ width: 160, height: 160, bottom: -40, left: 400 }}
-        />
+        <div className="hero-decor-circle" style={{ width: 340, height: 340, top: -80, left: -60 }} />
+        <div className="hero-decor-circle" style={{ width: 200, height: 200, top: 40, left: 200 }} />
+        <div className="hero-decor-circle" style={{ width: 160, height: 160, bottom: -40, left: 400 }} />
 
         <div className="hero-left-text">{slide.leftText}</div>
 
@@ -93,9 +57,20 @@ export default function Home() {
             {slide.title}
           </h1>
           <p className="hero-subtitle">{slide.subtitle}</p>
-          <Link to="/products" className="hero-cta">
-            {slide.cta}
-          </Link>
+          {slide.ctaHref.startsWith("http") ? (
+            <a
+              href={slide.ctaHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero-cta"
+            >
+              {slide.cta}
+            </a>
+          ) : (
+            <Link to={slide.ctaHref} className="hero-cta">
+              {slide.cta}
+            </Link>
+          )}
         </div>
 
         <div className="hero-dots">
@@ -112,77 +87,26 @@ export default function Home() {
       {/* ── SERVICIOS ── */}
       <section className="home-section bg-white">
         <div className="section-header">
-          <div className="section-tabs">
-            <button
-              className={`section-tab${activeTab === "destacados" ? " active" : ""}`}
-              onClick={() => setActiveTab("destacados")}
-            >
-              Más Solicitados
-            </button>
-            <span className="section-tab-divider">/</span>
-            <button
-              className={`section-tab${activeTab === "nuevos" ? " active" : ""}`}
-              onClick={() => setActiveTab("nuevos")}
-            >
-              Nuevos Servicios
-            </button>
+          <div>
+            <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>Nuestros Servicios</h2>
+            <p style={{ color: "var(--text-muted)", margin: "4px 0 0", fontSize: 14 }}>
+              Todo lo que necesitás en un solo lugar
+            </p>
           </div>
-          <Link to="/products">
-            <button className="view-all-btn">Ver Todos</button>
-          </Link>
         </div>
 
-        <div className="products-grid">
-          {displayed.length > 0
-            ? displayed.map((p) => (
-                <Link
-                  to={`/products/${p.id}`}
-                  key={p.id}
-                  style={{ textDecoration: "none" }}
-                >
-                  <div className="product-card">
-                    <div className="product-card-img">
-                      {p.imageUrl ? (
-                        <img src={p.imageUrl} alt={p.name} loading="lazy" />
-                      ) : (
-                        <div className="product-card-img-placeholder">🏥</div>
-                      )}
-                      <button
-                        className="product-wishlist-btn"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        ♡
-                      </button>
-                    </div>
-                    <div className="product-card-body">
-                      {p.category?.name && (
-                        <p className="product-category-label">{p.category.name}</p>
-                      )}
-                      <p className="product-name">{p.name}</p>
-                      <p className="product-price">
-                        ${Number(p.price).toLocaleString("es-AR")}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              ))
-            : Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="product-card">
-                  <div
-                    className="product-card-img"
-                    style={{ background: "#f0eae6", animation: "none" }}
-                  >
-                    <div className="product-card-img-placeholder">🏥</div>
-                  </div>
-                  <div className="product-card-body">
-                    <p className="product-category-label">Cargando...</p>
-                    <p className="product-name" style={{ color: "#ccc" }}>
-                      ──────────
-                    </p>
-                    <p className="product-price" style={{ color: "#ccc" }}>$ ─────</p>
-                  </div>
-                </div>
-              ))}
+        <div className="servicios-home-grid">
+          {SERVICIOS.map((s) => (
+            <Link
+              key={s.slug}
+              to={`/servicios/${s.slug}`}
+              className="servicio-home-card"
+            >
+              <div className="servicio-home-card-icono">{s.icono}</div>
+              <h3>{s.nombre}</h3>
+              <p>{s.descripcionCorta}</p>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -190,24 +114,24 @@ export default function Home() {
       <section className="home-section bg-cream">
         <div className="offers-intro">
           <h2>Turnos a Medida</h2>
-          <p>Descubrí los planes de salud y consultas especiales para vos</p>
+          <p>Descubrí los tratamientos especiales que tenemos para vos</p>
         </div>
         <div className="offers-grid">
           <div className="offer-card light">
-            <h3>Chequeo Preventivo</h3>
-            <p>Revisión completa adaptada a tu perfil de salud</p>
-            <Link to="/products">
-              <button className="offer-shop-btn">Reservar</button>
+            <h3>Estética Corporal</h3>
+            <p>Reducí, reafirmá y modelá tu figura con aparatología de última generación</p>
+            <Link to="/servicios/estetica-corporal">
+              <button className="offer-shop-btn">Ver Tratamientos</button>
             </Link>
-            <span className="offer-icon">🩺</span>
+            <span className="offer-icon">💆</span>
           </div>
           <div className="offer-card dark">
-            <h3>Consulta con Especialista</h3>
-            <p>Accedé a nuestros mejores especialistas al mejor precio</p>
-            <Link to="/products">
+            <h3>Ginecología y Estética Médica</h3>
+            <p>Atención ginecológica integral y medicina estética avanzada</p>
+            <Link to="/servicios/ginecologia">
               <button className="offer-shop-btn">Ver Más</button>
             </Link>
-            <span className="offer-icon">⚕️</span>
+            <span className="offer-icon">🩺</span>
           </div>
         </div>
       </section>
@@ -217,10 +141,7 @@ export default function Home() {
         <div className="specialists-header">
           <div>
             <h2>Nuestras Especialidades</h2>
-            <p>
-              Desde medicina general hasta especialidades de alto nivel, lo
-              tenemos todo
-            </p>
+            <p>Desde estética hasta medicina especializada, lo tenemos todo</p>
           </div>
           <div className="scroll-btns">
             <button className="scroll-btn">‹</button>
@@ -228,9 +149,11 @@ export default function Home() {
           </div>
         </div>
         <div className="specialists-scroll">
-          {SPECIALISTS.map((s) => (
-            <Link to={`/products?cat=${s.toLowerCase()}`} key={s}>
-              <div className="specialist-chip">{s}</div>
+          {SERVICIOS.map((s) => (
+            <Link to={`/servicios/${s.slug}`} key={s.slug}>
+              <div className="specialist-chip">
+                {s.icono} {s.nombre}
+              </div>
             </Link>
           ))}
         </div>
@@ -242,40 +165,70 @@ export default function Home() {
           <h2 className="why-title">¿Por qué elegirnos?</h2>
           <div className="why-grid">
             <div className="why-card">
-              <div className="why-icon">🚑</div>
-              <h3>Atención Rápida</h3>
+              <div className="why-icon">📍</div>
+              <h3>Encontranos en Catriel</h3>
               <p>
-                Turnos el mismo día para urgencias y consultas de guardia
-                disponibles las 24 horas
+                13 de Diciembre n° 1220 esquina YPF — Catriel, Rio Negro.{" "}
+                <a
+                  href="https://maps.app.goo.gl/Tum9MiVqodAZgBVJA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--primary)", fontWeight: 600 }}
+                >
+                  Ver en el mapa
+                </a>
               </p>
             </div>
             <div className="why-card">
-              <div className="why-icon">🩺</div>
-              <h3>Especialistas Certificados</h3>
+              <div className="why-icon">🕐</div>
+              <h3>Horarios Convenientes</h3>
               <p>
-                Más de 50 especialistas con formación de excelencia y amplia
-                experiencia clínica
+                Lunes a Viernes: 9:00–12:00 y 15:00–20:00<br />
+                Sábados: 9:00–13:00
               </p>
             </div>
             <div className="why-card">
               <div className="why-icon">⭐</div>
-              <h3>Confianza de Pacientes</h3>
+              <h3>Especialistas Certificados</h3>
               <p>
-                Más de 10.000 pacientes satisfechos y calificaciones de
-                excelencia constantes
+                Equipo profesional en estética, medicina, odontología, kinesiología y más.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── TESTIMONIAL ── */}
-      <section className="testimonial-banner">
-        <h2>Nuestros pacientes hablan por nosotros</h2>
-        <p>
-          Más de 10.000 historias de confianza y bienestar en Centro Médico
-          Santo Domingo
-        </p>
+      {/* ── CONTACTO / CTA WHATSAPP ── */}
+      <section className="testimonial-banner" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+        <h2>¿Querés sacar un turno?</h2>
+        <p>Contactanos por WhatsApp y te asignamos un turno rápidamente</p>
+        <TurnoBtn texto="Reservar Turno por WhatsApp" />
+        <div style={{ display: "flex", gap: 24, marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
+          <a
+            href="https://www.instagram.com/centromedicosantodomingocatr"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "white", fontWeight: 600, fontSize: 14, opacity: 0.9 }}
+          >
+            Instagram
+          </a>
+          <a
+            href="https://www.facebook.com/belleesteticacatriel/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "white", fontWeight: 600, fontSize: 14, opacity: 0.9 }}
+          >
+            Facebook
+          </a>
+          <a
+            href="https://maps.app.goo.gl/Tum9MiVqodAZgBVJA"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "white", fontWeight: 600, fontSize: 14, opacity: 0.9 }}
+          >
+            Google Maps
+          </a>
+        </div>
       </section>
     </div>
   );

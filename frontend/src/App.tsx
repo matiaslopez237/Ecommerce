@@ -13,17 +13,19 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminProductEdit from "./pages/AdminProductEdit";
 import Register from "./pages/Register";
 import ProductDetail from "./pages/ProductDetail";
+import ServicioDetalle from "./pages/ServicioDetalle";
 import "./App.css";
 
 const NAV_LINKS = [
   { label: "Inicio", to: "/" },
-  { label: "General", to: "/products?cat=general" },
-  { label: "Cardiología", to: "/products?cat=cardiologia" },
-  { label: "Pediatría", to: "/products?cat=pediatria" },
-  { label: "Dermatología", to: "/products?cat=dermatologia" },
-  { label: "Traumatología", to: "/products?cat=traumatologia" },
-  { label: "Laboratorio", to: "/products?cat=laboratorio" },
-  { label: "Especialidades", to: "/products" },
+  { label: "Estética Facial", to: "/servicios/estetica-facial" },
+  { label: "Estética Corporal", to: "/servicios/estetica-corporal" },
+  { label: "Depilación Láser", to: "/servicios/depilacion-laser" },
+  { label: "Ginecología", to: "/servicios/ginecologia" },
+  { label: "Quiropraxia", to: "/servicios/quiropraxia" },
+  { label: "Odontología", to: "/servicios/odontologia" },
+  { label: "Kinesiología", to: "/servicios/kinesiologia" },
+  { label: "Medicina General", to: "/servicios/medicina-general" },
 ];
 
 function NavSearch() {
@@ -142,6 +144,8 @@ export default function App() {
           <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+
+          <Route path="/servicios/:slug" element={<ServicioDetalle />} />
 
           <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
           <Route path="/admin/products/:id" element={<AdminRoute><AdminProductEdit /></AdminRoute>} />

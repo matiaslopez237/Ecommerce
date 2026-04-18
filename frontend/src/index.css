@@ -789,3 +789,99 @@ p { margin: 0; }
   .hero-content { right: 20px; bottom: 40px; max-width: 260px; }
   .form-card { padding: 32px 24px; }
 }
+
+/* WhatsApp button */
+.turno-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25D366;
+  color: white !important;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  text-decoration: none;
+}
+.turno-btn:hover { background: #1ea952; transform: translateY(-2px); }
+
+/* Service detail page */
+.servicio-hero {
+  background: linear-gradient(135deg, var(--primary-light) 0%, white 60%);
+  padding: 64px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.servicio-hero-icono { font-size: 56px; margin-bottom: 12px; }
+.servicio-hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; color: var(--primary); }
+.servicio-hero p { font-size: 17px; color: var(--text-muted); max-width: 600px; margin: 0 auto 28px; }
+
+.tratamientos-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 52px 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.tratamiento-card {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tratamiento-card h2 { font-size: 18px; font-weight: 700; color: var(--primary); }
+.tratamiento-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+.tratamiento-beneficios { list-style: none; padding: 0; margin: 0; }
+.tratamiento-beneficios li { font-size: 13.5px; color: var(--text-muted); padding: 3px 0; }
+.tratamiento-beneficios li::before { content: "✓ "; color: var(--primary); font-weight: 700; }
+.tratamiento-indicaciones { font-size: 13px; background: var(--bg); padding: 10px 14px; border-radius: 8px; color: var(--text-muted); }
+.tratamiento-faq { border-top: 1px solid var(--border-light); padding-top: 12px; }
+.tratamiento-faq-item { margin-bottom: 8px; }
+.tratamiento-faq-q { font-size: 13px; font-weight: 700; color: var(--text); }
+.tratamiento-faq-a { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.tratamiento-card .turno-btn { margin-top: auto; align-self: flex-start; }
+
+/* Home service grid */
+.servicios-home-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+.servicio-home-card {
+  background: white;
+  border-radius: 14px;
+  padding: 28px 20px;
+  border: 1px solid var(--border-light);
+  text-align: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  text-decoration: none;
+}
+.servicio-home-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.1); transform: translateY(-3px); }
+.servicio-home-card-icono { font-size: 40px; margin-bottom: 14px; }
+.servicio-home-card h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.servicio-home-card p { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+
+/* Obras sociales pills */
+.obras-sociales-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.obras-sociales-pill {
+  background: var(--primary-light); color: var(--primary);
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .tratamientos-grid { grid-template-columns: 1fr; }
+  .servicio-hero h1 { font-size: 26px; }
+}
