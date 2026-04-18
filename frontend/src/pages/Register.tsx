@@ -7,22 +7,22 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
 
     if (!email.trim() || !password) {
-      setMsg("Completá email y contraseña");
+      setMsg({ text: "Completá email y contraseña", ok: false });
       return;
     }
     if (password.length < 6) {
-      setMsg("La contraseña debe tener mínimo 6 caracteres");
+      setMsg({ text: "La contraseña debe tener mínimo 6 caracteres", ok: false });
       return;
     }
     if (password !== password2) {
-      setMsg("Las contraseñas no coinciden");
+      setMsg({ text: "Las contraseñas no coinciden", ok: false });
       return;
     }
 
@@ -35,59 +35,75 @@ export default function Register() {
 
       const token = res.data?.token;
       if (!token) {
-        setMsg("No llegó token del servidor");
+        setMsg({ text: "No llegó token del servidor", ok: false });
         return;
       }
 
-      // mismo key que venís usando
       localStorage.setItem("token", token);
-
-      // recarga para que AuthContext levante el token y haga /auth/me
       window.location.href = "/me";
     } catch (e: any) {
-      console.log("REGISTER ERROR:", e?.response?.status, e?.response?.data, e?.message);
-      setMsg(e?.response?.data?.error ?? "No se pudo registrar");
+      setMsg({ text: e?.response?.data?.error ?? "No se pudo registrar", ok: false });
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div style={{ padding: 20, fontFamily: "sans-serif", maxWidth: 520 }}>
-      <h2>Crear cuenta</h2>
-
-      <form onSubmit={submit} style={{ display: "grid", gap: 10 }}>
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="email"
-          style={{ padding: 10 }}
-        />
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="password"
-          type="password"
-          style={{ padding: 10 }}
-        />
-        <input
-          value={password2}
-          onChange={(e) => setPassword2(e.target.value)}
-          placeholder="repetir password"
-          type="password"
-          style={{ padding: 10 }}
-        />
-
-        <button disabled={loading} style={{ padding: 10 }}>
-          {loading ? "Creando..." : "Registrarme"}
-        </button>
-
-        {msg && <div style={{ opacity: 0.9 }}>{msg}</div>}
-
-        <div style={{ opacity: 0.8 }}>
-          ¿Ya tenés cuenta? <Link to="/">Ir a Login</Link>
+    <div className="form-page">
+      <div className="form-card">
+        <div className="form-logo">
+          <div className="logo-cross">✚</div>
+          <div className="logo-text">
+            <span className="logo-name">CMSD</span>
+            <span className="logo-sub">Centro Médico</span>
+          </div>
         </div>
-      </form>
+
+        <p className="form-title">Crear Cuenta</p>
+        <p className="form-subtitle">Registrate para gestionar tus turnos</p>
+
+        <form onSubmit={submit}>
+          <input
+            className="form-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Correo electrónico"
+            type="email"
+            autoComplete="email"
+            required
+          />
+          <input
+            className="form-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Contraseña"
+            type="password"
+            autoComplete="new-password"
+            required
+          />
+          <input
+            className="form-input"
+            value={password2}
+            onChange={(e) => setPassword2(e.target.value)}
+            placeholder="Repetir contraseña"
+            type="password"
+            autoComplete="new-password"
+            required
+          />
+
+          <button className="btn-primary" disabled={loading} type="submit">
+            {loading ? "Creando cuenta..." : "Registrarme"}
+          </button>
+
+          {msg && (
+            <p className={msg.ok ? "form-msg-ok" : "form-msg-err"}>{msg.text}</p>
+          )}
+        </form>
+
+        <p className="form-link">
+          ¿Ya tenés cuenta? <Link to="/login">Iniciar sesión</Link>
+        </p>
+      </div>
     </div>
   );
 }

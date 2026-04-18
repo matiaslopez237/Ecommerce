@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const { login, user, logout } = useAuth();
@@ -8,75 +8,97 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState<string | null>(null);
-  
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
-
     try {
       await login(email, password);
-      setMsg("✅ Login OK");
+      setMsg({ text: "Ingreso exitoso", ok: true });
       navigate("/me");
     } catch {
-      setMsg("❌ Error de login");
+      setMsg({ text: "Email o contraseña incorrectos", ok: false });
     }
   }
 
-  // ✅ ESTO VA ACÁ (antes del return del form)
   if (user) {
     return (
-      <div style={{ maxWidth: 360, margin: "40px auto", fontFamily: "sans-serif" }}>
-        <h2>Login</h2>
-        <p>
-          Ya estás logueado como <b>{user.email}</b>
-        </p>
-
-        <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-          <button
-            onClick={() => navigate("/me")}
-            style={{ flex: 1, padding: 10 }}
-          >
-            Ir a Me
+      <div className="form-page">
+        <div className="form-card">
+          <div className="form-logo">
+            <div className="logo-cross">✚</div>
+            <div className="logo-text">
+              <span className="logo-name">CMSD</span>
+              <span className="logo-sub">Centro Médico</span>
+            </div>
+          </div>
+          <p className="form-title">¡Bienvenido!</p>
+          <p className="form-subtitle">
+            Sesión iniciada como <b>{user.email}</b>
+          </p>
+          <button className="btn-primary" onClick={() => navigate("/me")}>
+            Ir a Mi Cuenta
           </button>
-
           <button
+            className="btn-primary"
+            style={{ background: "transparent", color: "var(--primary)", border: "1.5px solid var(--primary)", marginTop: 10 }}
             onClick={logout}
-            style={{ flex: 1, padding: 10 }}
           >
-            Logout
+            Cerrar Sesión
           </button>
         </div>
       </div>
     );
   }
 
-
   return (
-    <div style={{ maxWidth: 360, margin: "40px auto", fontFamily: "sans-serif" }}>
-      <h2>Login</h2>
+    <div className="form-page">
+      <div className="form-card">
+        <div className="form-logo">
+          <div className="logo-cross">✚</div>
+          <div className="logo-text">
+            <span className="logo-name">CMSD</span>
+            <span className="logo-sub">Centro Médico</span>
+          </div>
+        </div>
 
-      <form onSubmit={handleLogin}>
-        <input
-          placeholder="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ width: "100%", padding: 10, marginBottom: 10 }}
-        />
+        <p className="form-title">Iniciar Sesión</p>
+        <p className="form-subtitle">Ingresá a tu cuenta del centro médico</p>
 
-        <input
-          placeholder="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ width: "100%", padding: 10, marginBottom: 10 }}
-        />
+        <form onSubmit={handleLogin}>
+          <input
+            className="form-input"
+            placeholder="Correo electrónico"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+          />
+          <input
+            className="form-input"
+            placeholder="Contraseña"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
+          <button className="btn-primary" type="submit">
+            Ingresar
+          </button>
+        </form>
 
-        <button style={{ width: "100%", padding: 10 }}>Entrar</button>
-      </form>
+        {msg && (
+          <p className={msg.ok ? "form-msg-ok" : "form-msg-err"}>{msg.text}</p>
+        )}
 
-      {msg && <p>{msg}</p>}
+        <p className="form-link">
+          ¿No tenés cuenta?{" "}
+          <Link to="/register">Registrate aquí</Link>
+        </p>
+      </div>
     </div>
   );
 }

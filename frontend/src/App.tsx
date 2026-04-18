@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import Me from "./pages/Me";
+import Home from "./pages/Home";
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Products from "./pages/Products";
@@ -12,33 +13,116 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminProductEdit from "./pages/AdminProductEdit";
 import Register from "./pages/Register";
 import ProductDetail from "./pages/ProductDetail";
+import "./App.css";
 
+const NAV_LINKS = [
+  { label: "Inicio", to: "/" },
+  { label: "General", to: "/products?cat=general" },
+  { label: "Cardiología", to: "/products?cat=cardiologia" },
+  { label: "Pediatría", to: "/products?cat=pediatria" },
+  { label: "Dermatología", to: "/products?cat=dermatologia" },
+  { label: "Traumatología", to: "/products?cat=traumatologia" },
+  { label: "Laboratorio", to: "/products?cat=laboratorio" },
+  { label: "Especialidades", to: "/products" },
+];
+
+function NavSearch() {
+  return (
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <circle cx="11" cy="11" r="7" /><path d="m16.5 16.5 4 4" />
+    </svg>
+  );
+}
+
+function NavCart() {
+  return (
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 01-8 0" />
+    </svg>
+  );
+}
+
+function NavUser() {
+  return (
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
 
 function Nav() {
   const { user, logout } = useAuth();
-  {user?.role === "ADMIN" && <Link to="/admin/products">Admin</Link>}
+  const location = useLocation();
 
   return (
-    <nav style={{ padding: 12, display: "flex", gap: 12, alignItems: "center" }}>
-      <Link to="/">Login</Link>
-      <Link to="/me">Me</Link>
-      <Link to="/products">Products</Link>
-      <Link to="/cart">Cart</Link>
-      <Link to="/orders">Orders</Link>
-      {!user && <Link to="/register">Register</Link>}
-
-
-      <div style={{ marginLeft: "auto" }}>
-        {user ? (
-          <>
-            <span style={{ marginRight: 12 }}>{user.email}</span>
-            <button onClick={logout}>Logout</button>
-          </>
-        ) : (
-          <span>No logueado</span>
-        )}
+    <header>
+      <div className="top-banner">
+        Bienvenidos al Centro Médico Santo Domingo — Tu salud, nuestra prioridad
       </div>
-    </nav>
+
+      <nav className="main-nav">
+        <div className="nav-inner">
+          <Link to="/" className="nav-logo">
+            <div className="logo-cross">✚</div>
+            <div className="logo-text">
+              <span className="logo-name">CMSD</span>
+              <span className="logo-sub">Centro Médico</span>
+            </div>
+          </Link>
+
+          <ul className="nav-categories">
+            {NAV_LINKS.map((l) => (
+              <li key={l.label}>
+                <Link
+                  to={l.to}
+                  className={location.pathname === l.to.split("?")[0] ? "nav-active" : ""}
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className="nav-actions">
+            <Link to="/products" className="nav-icon-btn" title="Buscar">
+              <NavSearch />
+            </Link>
+
+            <Link to="/cart" className="nav-icon-btn" title="Carrito">
+              <NavCart />
+            </Link>
+
+            <Link to="/me" className="nav-icon-btn" title="Mi cuenta">
+              <NavUser />
+            </Link>
+
+            {user ? (
+              <>
+                <span className="nav-user-email">{user.email}</span>
+                <button className="nav-logout-btn" onClick={logout}>
+                  Salir
+                </button>
+              </>
+            ) : (
+              <Link to="/login">
+                <button className="nav-logout-btn">Ingresar</button>
+              </Link>
+            )}
+
+            {user?.role === "ADMIN" && (
+              <Link to="/admin/products">
+                <button className="nav-logout-btn" style={{ borderColor: "var(--primary)", color: "var(--primary)" }}>
+                  Admin
+                </button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </nav>
+    </header>
   );
 }
 
@@ -48,70 +132,19 @@ export default function App() {
       <BrowserRouter>
         <Nav />
         <Routes>
-          <Route path="/" element={<Login />} />
-
-          <Route
-            path="/me"
-            element={
-              <ProtectedRoute>
-                <Me />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Productos puede ser público */}
-          <Route path="/products" element={<Products />} />
-
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* Carrito y órdenes: protegido */}
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute>
-                <Cart />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/orders"
-            element={
-              <ProtectedRoute>
-                <Orders />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/orders/:id"
-            element={
-              <ProtectedRoute>
-                <OrderDetail />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/products"
-            element={
-              <AdminRoute>
-                <AdminProducts />
-              </AdminRoute>
-            }
-          />
-
-          <Route
-            path="/admin/products/:id"
-            element={
-              <AdminRoute>
-                <AdminProductEdit />
-              </AdminRoute>
-            }
-          />
-
+          <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
 
+          <Route path="/me" element={<ProtectedRoute><Me /></ProtectedRoute>} />
+          <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+          <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+
+          <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
+          <Route path="/admin/products/:id" element={<AdminRoute><AdminProductEdit /></AdminRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

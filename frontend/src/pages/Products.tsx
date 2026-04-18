@@ -9,7 +9,7 @@ type Product = {
   description?: string | null;
   price: number | string;
   stock: number;
-  imageUrl?: string | null; // ✅ NUEVO
+  imageUrl?: string | null;
   category?: { id: number; name: string } | null;
   categoryId?: number | null;
 };
@@ -26,87 +26,112 @@ export default function Products() {
       try {
         const res = await api.get("/products");
         setProducts(res.data);
-      } catch (e) {
-        console.log("LOAD PRODUCTS ERROR:", e);
-        setError("No pude cargar productos");
+      } catch {
+        setError("No se pudieron cargar los servicios");
       }
     }
     load();
   }, []);
 
   return (
-    <div style={{ padding: 20, fontFamily: "sans-serif" }}>
-      <h2>Productos</h2>
-      {error && <p>❌ {error}</p>}
+    <div style={{ background: "var(--bg)", minHeight: "calc(100vh - 110px)" }}>
+      <div className="page-container">
+        <div className="products-page-header">
+          <h1 className="page-title">Nuestros Servicios</h1>
+          {isAdmin && (
+            <Link to="/admin/products">
+              <button
+                style={{
+                  background: "var(--primary)",
+                  color: "white",
+                  border: "none",
+                  padding: "9px 22px",
+                  borderRadius: 22,
+                  fontWeight: 700,
+                  fontSize: 13,
+                }}
+              >
+                + Nuevo Servicio
+              </button>
+            </Link>
+          )}
+        </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-          gap: 12,
-        }}
-      >
-        {products.map((p) => (
-          <Link to={`/products/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-          {
+        {error && (
+          <p style={{ color: "#c0392b", marginBottom: 16 }}>⚠ {error}</p>
+        )}
 
-          <div
-            key={p.id}
-            style={{
-              border: "1px solid #444",
-              borderRadius: 12,
-              padding: 12,
-              background: "#0f0f0f",
-            }}
-          >
-            {/* FOTO */}
-            <div
-              style={{
-                height: 150,
-                borderRadius: 10,
-                overflow: "hidden",
-                border: "1px solid #333",
-                marginBottom: 10,
-                background: "#111",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+        <div className="products-grid">
+          {products.map((p) => (
+            <Link
+              to={`/products/${p.id}`}
+              key={p.id}
+              style={{ textDecoration: "none" }}
             >
-              {p.imageUrl ? (
-                <img
-                  src={p.imageUrl}
-                  alt={p.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  loading="lazy"
-                />
-              ) : (
-                <div style={{ opacity: 0.7, fontSize: 14 }}>📷 Sin foto</div>
-              )}
-            </div>
+              <div className="product-card">
+                <div className="product-card-img">
+                  {p.imageUrl ? (
+                    <img
+                      src={p.imageUrl}
+                      alt={p.name}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="product-card-img-placeholder">🏥</div>
+                  )}
+                  <button
+                    className="product-wishlist-btn"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    ♡
+                  </button>
+                </div>
 
-            <h3 style={{ margin: "0 0 6px 0" }}>{p.name}</h3>
-
-            {p.category?.name && (
-              <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 8 }}>
-                Categoría: {p.category.name}
+                <div className="product-card-body">
+                  {p.category?.name && (
+                    <p className="product-category-label">{p.category.name}</p>
+                  )}
+                  <p className="product-name">{p.name}</p>
+                  {p.description && (
+                    <p
+                      style={{
+                        fontSize: 12,
+                        color: "var(--text-muted)",
+                        marginBottom: 8,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {p.description}
+                    </p>
+                  )}
+                  <p className="product-price">
+                    ${Number(p.price).toLocaleString("es-AR")}
+                  </p>
+                  {isAdmin && (
+                    <p
+                      style={{
+                        fontSize: 11,
+                        color: "var(--text-light)",
+                        marginTop: 4,
+                      }}
+                    >
+                      Stock: {p.stock}
+                    </p>
+                  )}
+                </div>
               </div>
-            )}
+            </Link>
+          ))}
+        </div>
 
-            <p style={{ margin: "0 0 10px 0", opacity: 0.85 }}>
-              {p.description ?? "Sin descripción"}
-            </p>
-
-            <p style={{ margin: 0 }}>
-              <b>${Number(p.price)}</b>
-              {/* ✅ Stock solo para admin */}
-              {isAdmin && <> — stock: {p.stock}</>}
-            </p>
-            
-          </div>}
-          </Link>
-          
-        ))}
+        {products.length === 0 && !error && (
+          <p style={{ color: "var(--text-muted)", textAlign: "center", marginTop: 60 }}>
+            Cargando servicios...
+          </p>
+        )}
       </div>
     </div>
   );
