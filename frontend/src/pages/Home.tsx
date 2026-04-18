@@ -102,14 +102,22 @@ export default function Home() {
               to={`/servicios/${s.slug}`}
               className="servicio-home-card"
             >
-              <div className="servicio-home-card-icono">{s.icono}</div>
+              <div className="servicio-home-card-icono">
+                {s.imagen ? (
+                  <img src={s.imagen} alt={s.nombre} className="servicio-home-card-img" />
+                ) : (
+                  s.icono
+                )}
+              </div>
               <h3>{s.nombre}</h3>
               <p>{s.descripcionCorta}</p>
             </Link>
           ))}
           {/* Card catálogo de productos */}
           <Link to="/products" className="servicio-home-card" style={{ border: "2px solid var(--primary)" }}>
-            <div className="servicio-home-card-icono">🛍</div>
+            <div className="servicio-home-card-icono">
+              <img src="/iconos/catalogo.png" alt="Catálogo" className="servicio-home-card-img" />
+            </div>
             <h3>Catálogo de Productos</h3>
             <p>Productos Skincare y cuidado personal disponibles para comprar</p>
           </Link>

@@ -66,7 +66,13 @@ export default function ServicioDetalle() {
     <div>
       {/* ── HERO ── */}
       <section className="servicio-hero">
-        <div className="servicio-hero-icono">{servicio.icono}</div>
+        <div className="servicio-hero-icono">
+          {servicio.imagen ? (
+            <img src={servicio.imagen} alt={servicio.nombre} className="servicio-hero-img" />
+          ) : (
+            servicio.icono
+          )}
+        </div>
         <h1>{servicio.nombre}</h1>
         <p>{servicio.descripcionCorta}</p>
         {servicio.descripcionLarga && (

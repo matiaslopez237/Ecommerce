@@ -12,7 +12,8 @@ export type Tratamiento = {
 export type Servicio = {
   slug: string;
   nombre: string;
-  icono: string;
+  icono: string;       // emoji fallback (legacy)
+  imagen?: string;     // ruta a /iconos/*.png
   descripcionCorta: string;
   descripcionLarga?: string;
   tratamientos?: Tratamiento[];
@@ -24,6 +25,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "estetica-facial",
     nombre: "Estética Facial",
     icono: "✨",
+    imagen: "/iconos/estetica-facial.png",
     descripcionCorta:
       "Tratamientos faciales profesionales para cuidar, rejuvenecer y realzar tu piel",
     tratamientos: [
@@ -180,6 +182,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "estetica-corporal",
     nombre: "Estética Corporal",
     icono: "💆",
+    imagen: "/iconos/estetica-corporal.png",
     descripcionCorta:
       "Tratamientos corporales para reducir, reafirmar y modelar tu figura",
     tratamientos: [
@@ -285,6 +288,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "depilacion-laser",
     nombre: "Depilación Definitiva Láser",
     icono: "⚡",
+    imagen: "/iconos/depilacion-laser.png",
     descripcionCorta:
       "Disfrutá de una piel suave y olvidate de depilarte constantemente",
     descripcionLarga:
@@ -331,6 +335,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "ginecologia",
     nombre: "Ginecología y Estética Médica",
     icono: "🩺",
+    imagen: "/iconos/ginecologia.png",
     descripcionCorta:
       "Atención ginecológica integral y tratamientos de medicina estética avanzada",
     tratamientos: [
@@ -469,6 +474,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "quiropraxia",
     nombre: "Quiropraxia",
     icono: "🦴",
+    imagen: "/iconos/quiropraxia.png",
     descripcionCorta:
       "Detectamos, analizamos y corregimos subluxaciones vertebrales para mejorar tu calidad de vida",
     descripcionLarga:
@@ -515,6 +521,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "odontologia",
     nombre: "Odontología",
     icono: "🦷",
+    imagen: "/iconos/odontologia.png",
     descripcionCorta:
       "Odontología general y especializada con la última tecnología en equipamiento",
     tratamientos: [
@@ -580,6 +587,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "kinesiologia",
     nombre: "Kinesiología y Rehabilitación",
     icono: "🏃",
+    imagen: "/iconos/kinesiologia.png",
     descripcionCorta:
       "Rehabilitación profesional con atención de obras sociales y particular",
     descripcionLarga:
@@ -632,6 +640,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "medicina-general",
     nombre: "Medicina General",
     icono: "🏥",
+    imagen: "/iconos/medicina-general.png",
     descripcionCorta:
       "Medicina integrativa, general y clínica con atención de obras sociales",
     descripcionLarga:
