@@ -1,14 +1,14 @@
 :root {
-  --primary: #C82560;
-  --primary-hover: #a81d52;
-  --primary-light: #fce8f0;
-  --bg: #faf6f3;
+  --primary: #8B7355;
+  --primary-hover: #705E44;
+  --primary-light: #F2E8DC;
+  --bg: #FAF7F3;
   --bg-white: #ffffff;
-  --text: #1a1a1a;
-  --text-muted: #666666;
-  --text-light: #999999;
-  --border: #e8ddd8;
-  --border-light: #f0e8e3;
+  --text: #2C1F14;
+  --text-muted: #6B5A4A;
+  --text-light: #A08878;
+  --border: #E2D5C8;
+  --border-light: #EDE5DB;
 
   font-family: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -219,7 +219,7 @@ p { margin: 0; }
   position: relative;
   height: 460px;
   overflow: hidden;
-  background: linear-gradient(130deg, #f5e8ef 0%, #f9d5e5 30%, #C82560 75%, #8c1940 100%);
+  background: linear-gradient(130deg, #f5ede3 0%, #e8d8c4 30%, #8B7355 75%, #5E4A35 100%);
   display: flex;
   align-items: center;
 }
@@ -285,7 +285,7 @@ p { margin: 0; }
   position: absolute;
   left: 72px;
   bottom: 80px;
-  color: rgba(200,37,96,0.18);
+  color: rgba(139,115,85,0.15);
   font-size: 120px;
   font-weight: 900;
   text-transform: uppercase;

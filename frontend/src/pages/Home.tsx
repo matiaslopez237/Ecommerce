@@ -13,7 +13,7 @@ export default function Home() {
       subtitle: "Especialistas comprometidos con tu bienestar",
       cta: "Reservar Turno",
       ctaHref: WA_LINK,
-      bg: "linear-gradient(130deg, #f5e8ef 0%, #f9d5e5 30%, #C82560 75%, #8c1940 100%)",
+      bg: "linear-gradient(130deg, #f5ede3 0%, #e8d8c4 30%, #8B7355 75%, #5E4A35 100%)",
       leftText: "SALUD",
     },
     {
@@ -22,7 +22,7 @@ export default function Home() {
       subtitle: "Tratamientos faciales, corporales y láser de última generación",
       cta: "Ver Servicios",
       ctaHref: "/servicios/estetica-facial",
-      bg: "linear-gradient(130deg, #f5e8ef 0%, #f9d5e5 30%, #C82560 75%, #8c1940 100%)",
+      bg: "linear-gradient(130deg, #f5ede3 0%, #e8d8c4 30%, #8B7355 75%, #5E4A35 100%)",
       leftText: "VIDA",
     },
     {
@@ -31,7 +31,7 @@ export default function Home() {
       subtitle: "Ginecología, medicina general y más especialidades",
       cta: "Ver Especialidades",
       ctaHref: "/servicios/ginecologia",
-      bg: "linear-gradient(130deg, #f5e8ef 0%, #f9d5e5 30%, #C82560 75%, #8c1940 100%)",
+      bg: "linear-gradient(130deg, #f5ede3 0%, #e8d8c4 30%, #8B7355 75%, #5E4A35 100%)",
       leftText: "BIEN",
     },
   ];
