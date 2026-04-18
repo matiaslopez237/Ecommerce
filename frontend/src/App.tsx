@@ -26,6 +26,7 @@ const NAV_LINKS = [
   { label: "Odontología", to: "/servicios/odontologia" },
   { label: "Kinesiología", to: "/servicios/kinesiologia" },
   { label: "Medicina General", to: "/servicios/medicina-general" },
+  { label: "🛍 Catálogo", to: "/products" },
 ];
 
 function NavSearch() {

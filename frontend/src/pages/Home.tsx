@@ -107,6 +107,12 @@ export default function Home() {
               <p>{s.descripcionCorta}</p>
             </Link>
           ))}
+          {/* Card catálogo de productos */}
+          <Link to="/products" className="servicio-home-card" style={{ border: "2px solid var(--primary)" }}>
+            <div className="servicio-home-card-icono">🛍</div>
+            <h3>Catálogo de Productos</h3>
+            <p>Productos Skincare y cuidado personal disponibles para comprar</p>
+          </Link>
         </div>
       </section>
 
@@ -156,6 +162,11 @@ export default function Home() {
               </div>
             </Link>
           ))}
+          <Link to="/products">
+            <div className="specialist-chip" style={{ borderColor: "var(--primary)", color: "var(--primary)", fontWeight: 700 }}>
+              🛍 Catálogo de Productos
+            </div>
+          </Link>
         </div>
       </section>
 
