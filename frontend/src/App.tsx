@@ -98,21 +98,17 @@ function Nav() {
               <NavCart />
             </Link>
 
-            <Link to="/me" className="nav-icon-btn" title="Mi cuenta">
+            <Link to={user ? "/me" : "/login"} className="nav-icon-btn" title={user ? "Mi cuenta" : "Ingresar"}>
               <NavUser />
             </Link>
 
-            {user ? (
+            {user && (
               <>
                 <span className="nav-user-email">{user.email}</span>
                 <button className="nav-logout-btn" onClick={logout}>
                   Salir
                 </button>
               </>
-            ) : (
-              <Link to="/login">
-                <button className="nav-logout-btn">Ingresar</button>
-              </Link>
             )}
 
             {user?.role === "ADMIN" && (
