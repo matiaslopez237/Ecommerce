@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import Me from "./pages/Me";
@@ -54,6 +55,12 @@ function NavUser() {
       <circle cx="12" cy="7" r="4" />
     </svg>
   );
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
 }
 
 function Nav() {
@@ -129,6 +136,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Nav />
         <Routes>
           <Route path="/" element={<Home />} />
