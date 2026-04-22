@@ -112,6 +112,18 @@ export default function ServicioDetalle() {
         <div className="tratamientos-grid">
           {servicio.tratamientos.map((t) => (
             <article key={t.nombre} className="tratamiento-card">
+              {t.video && (
+                <div className="tratamiento-video-wrap">
+                  <iframe
+                    src={t.video}
+                    title={t.nombre}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="tratamiento-video"
+                  />
+                </div>
+              )}
+
               <h2>{t.nombre}</h2>
               <p>{t.descripcion}</p>
 

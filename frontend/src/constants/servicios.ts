@@ -7,6 +7,7 @@ export type Tratamiento = {
   beneficios?: string[];
   sesiones?: string;
   faq?: { pregunta: string; respuesta: string }[];
+  video?: string;  // URL de embed de YouTube
 };
 
 export type Servicio = {
@@ -56,6 +57,7 @@ export const SERVICIOS: Servicio[] = [
         indicaciones:
           "Indicado para quienes buscan prevenir o tratar la flacidez y las arrugas.",
         sesiones: "Cada 7 a 10 días.",
+        video: "https://www.youtube.com/embed/xIGLzOI8x6w",
         beneficios: [
           "Mejora firmeza y elasticidad",
           "Estimula la producción de colágeno",
@@ -76,6 +78,7 @@ export const SERVICIOS: Servicio[] = [
         indicaciones:
           "Apto para todo tipo de pieles. Indoloro, no invasivo.",
         sesiones: "Cada 15 días.",
+        video: "https://www.youtube.com/embed/LjODoxt5tcQ",
         beneficios: [
           "Estimula la renovación celular",
           "Favorece la producción de colágeno",
@@ -100,6 +103,7 @@ export const SERVICIOS: Servicio[] = [
         indicaciones:
           "3 a 5 sesiones. Cada 30 días (alternando con Dermapen a los 15 días). Se aplica con anestesia en crema.",
         sesiones: "Cada 30 días. 3 a 5 sesiones totales.",
+        video: "https://www.youtube.com/embed/aKXpHPJDPj0",
         beneficios: [
           "Rejuvenecimiento facial",
           "Estimula la producción de colágeno",
@@ -193,6 +197,7 @@ export const SERVICIOS: Servicio[] = [
         indicaciones:
           "Zonas: abdomen, flancos, piernas, glúteos, brazos.",
         sesiones: "Cada 7 días.",
+        video: "https://www.youtube.com/embed/voZ6mTo_yXE",
         beneficios: [
           "Reduce la celulitis",
           "Reafirma la piel",
@@ -551,6 +556,7 @@ export const SERVICIOS: Servicio[] = [
         nombre: "Escáner 3D Intraoral",
         descripcion:
           "Tecnología de vanguardia que permite lograr implantes de calidad a medida de cada paciente mediante un escaneado digital preciso de la cavidad bucal.",
+        video: "https://www.youtube.com/embed/k80vxmR5kZs",
         beneficios: [
           "Implantes a medida de cada paciente",
           "Mayor precisión en el diagnóstico",

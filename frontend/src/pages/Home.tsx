@@ -184,7 +184,7 @@ export default function Home() {
           <h2 className="why-title">¿Por qué elegirnos?</h2>
           <div className="why-grid">
             <div className="why-card">
-              <div className="why-icon">📍</div>
+              <div className="why-icon"><img src="/iconos/why-ubicacion.png" alt="Ubicación" className="why-icon-img" /></div>
               <h3>Encontranos en Catriel</h3>
               <p>
                 13 de Diciembre n° 1220 esquina YPF — Catriel, Rio Negro.{" "}
@@ -199,7 +199,7 @@ export default function Home() {
               </p>
             </div>
             <div className="why-card">
-              <div className="why-icon">🕐</div>
+              <div className="why-icon"><img src="/iconos/why-horarios.png" alt="Horarios" className="why-icon-img" /></div>
               <h3>Horarios Convenientes</h3>
               <p>
                 Lunes a Viernes: 9:00–12:00 y 15:00–20:00<br />
@@ -207,7 +207,7 @@ export default function Home() {
               </p>
             </div>
             <div className="why-card">
-              <div className="why-icon">⭐</div>
+              <div className="why-icon"><img src="/iconos/why-profesionales.png" alt="Especialistas" className="why-icon-img" /></div>
               <h3>Especialistas Certificados</h3>
               <p>
                 Equipo profesional en estética, medicina, odontología, kinesiología y más.
