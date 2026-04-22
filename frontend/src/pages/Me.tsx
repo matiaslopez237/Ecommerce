@@ -36,7 +36,9 @@ export default function Me() {
   } as const;
 
   const linkBtnStyle = {
-    display: "block",
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
     padding: "12px 16px",
     borderRadius: 10,
     border: "1px solid var(--border)",
@@ -76,7 +78,7 @@ export default function Me() {
               fontSize: 12,
               fontWeight: 700,
             }}>
-              {user.role === "ADMIN" ? "🛡️" : "👤"} {roleLabel}
+              {user.role === "ADMIN" ? "🛡️" : <img src="/iconos/me-usuario.png" alt="" style={{ width: 16, height: 16, objectFit: "contain" }} />} {roleLabel}
             </span>
           </div>
 
@@ -109,20 +111,23 @@ export default function Me() {
           </div>
 
           <div style={{ display: "grid", gap: 10 }}>
-            <Link to="/products" style={linkBtnStyle}>🛒 Ver productos</Link>
-            <Link to="/orders"   style={linkBtnStyle}>📦 Mis órdenes</Link>
-            <Link to="/cart"     style={linkBtnStyle}>🧺 Ir al carrito</Link>
+            <Link to="/products" style={linkBtnStyle}>
+              <img src="/iconos/me-productos.png" alt="" style={{ width: 22, height: 22, objectFit: "contain" }} />
+              Ver productos
+            </Link>
+            <Link to="/orders" style={linkBtnStyle}>
+              <img src="/iconos/me-ordenes.png" alt="" style={{ width: 22, height: 22, objectFit: "contain" }} />
+              Mis órdenes
+            </Link>
+            <Link to="/cart" style={linkBtnStyle}>
+              <img src="/iconos/me-carrito.png" alt="" style={{ width: 22, height: 22, objectFit: "contain" }} />
+              Ir al carrito
+            </Link>
             {user.role === "ADMIN" && (
               <Link to="/admin/products" style={{ ...linkBtnStyle, borderColor: "var(--primary)", color: "var(--primary)" }}>
                 🛠️ Admin · Productos
               </Link>
             )}
-          </div>
-
-          <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "16px 0" }} />
-
-          <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.5 }}>
-            Tip: si querés que esto tenga foto/nombre, agregamos esos campos al modelo User y a <code>/auth/me</code>.
           </div>
         </div>
 
