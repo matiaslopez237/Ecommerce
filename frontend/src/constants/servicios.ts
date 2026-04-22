@@ -7,7 +7,8 @@ export type Tratamiento = {
   beneficios?: string[];
   sesiones?: string;
   faq?: { pregunta: string; respuesta: string }[];
-  video?: string;  // URL de embed de YouTube
+  video?: string;           // URL de embed de YouTube
+  videoFormato?: "vertical" | "horizontal";
 };
 
 export type Servicio = {
@@ -557,6 +558,7 @@ export const SERVICIOS: Servicio[] = [
         descripcion:
           "Tecnología de vanguardia que permite lograr implantes de calidad a medida de cada paciente mediante un escaneado digital preciso de la cavidad bucal.",
         video: "https://www.youtube.com/embed/cbzJ7IwifCw",
+        videoFormato: "horizontal",
         beneficios: [
           "Implantes a medida de cada paciente",
           "Mayor precisión en el diagnóstico",

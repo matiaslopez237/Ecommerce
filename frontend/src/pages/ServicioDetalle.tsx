@@ -113,7 +113,7 @@ export default function ServicioDetalle() {
           {servicio.tratamientos.map((t) => (
             <article key={t.nombre} className="tratamiento-card">
               {t.video && (
-                <div className="tratamiento-video-wrap">
+                <div className={`tratamiento-video-wrap${t.videoFormato === "horizontal" ? " tratamiento-video-wrap--h" : ""}`}>
                   <iframe
                     src={t.video}
                     title={t.nombre}
