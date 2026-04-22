@@ -870,29 +870,22 @@ p { margin: 0; }
 
 /* ── VIDEO EMBED ── */
 .tratamiento-video-wrap {
-  position: relative;
   width: 100%;
   max-width: 260px;
   margin: 0 auto 16px;
-  aspect-ratio: 9 / 16;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
-/* Recorta ~56px del top para ocultar el overlay de título/canal de YouTube */
 .tratamiento-video {
-  position: absolute;
-  top: -56px;
-  left: 0;
   width: 100%;
-  height: calc(100% + 56px);
-  border: none;
+  height: auto;
   display: block;
+  border: none;
 }
 /* Video horizontal (16:9) */
 .tratamiento-video-wrap--h {
   max-width: 100%;
-  aspect-ratio: 16 / 9;
 }
 
 /* Home service grid */

@@ -114,11 +114,10 @@ export default function ServicioDetalle() {
             <article key={t.nombre} className="tratamiento-card">
               {t.video && (
                 <div className={`tratamiento-video-wrap${t.videoFormato === "horizontal" ? " tratamiento-video-wrap--h" : ""}`}>
-                  <iframe
+                  <video
                     src={t.video}
-                    title={t.nombre}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
+                    controls
+                    playsInline
                     className="tratamiento-video"
                   />
                 </div>
