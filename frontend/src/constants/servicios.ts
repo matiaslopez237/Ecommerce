@@ -556,7 +556,7 @@ export const SERVICIOS: Servicio[] = [
         nombre: "Escáner 3D Intraoral",
         descripcion:
           "Tecnología de vanguardia que permite lograr implantes de calidad a medida de cada paciente mediante un escaneado digital preciso de la cavidad bucal.",
-        video: "https://www.youtube.com/embed/k80vxmR5kZs",
+        video: "https://www.youtube.com/embed/cbzJ7IwifCw",
         beneficios: [
           "Implantes a medida de cada paciente",
           "Mayor precisión en el diagnóstico",
