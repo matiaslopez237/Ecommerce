@@ -10,7 +10,7 @@ function formatDate(s?: string) {
 }
 
 export default function Me() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const roleLabel = useMemo(() => {
     if (!user) return "";
@@ -129,6 +129,26 @@ export default function Me() {
               </Link>
             )}
           </div>
+
+          <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "16px 0" }} />
+
+          <button
+            onClick={() => { logout(); window.location.href = "/"; }}
+            style={{
+              width: "100%",
+              padding: "12px 16px",
+              borderRadius: 10,
+              border: "1px solid #e0b0b0",
+              background: "#fff5f5",
+              color: "#c0392b",
+              fontWeight: 700,
+              fontSize: 14,
+              cursor: "pointer",
+              textAlign: "left",
+            }}
+          >
+            🚪 Cerrar sesión
+          </button>
         </div>
 
       </div>
