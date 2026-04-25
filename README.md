@@ -1,378 +1,264 @@
-# Ecommerce Backend (Express + Prisma + JWT + Roles + MercadoPago)
+# Centro Médico Santo Domingo — Sitio Web
 
-Backend de ecommerce con:
-- Registro y login con **JWT**
-- Roles **USER / ADMIN**
-- **Categories** y **Products**
-- **Cart** persistido
-- **Orders** (checkout con transacción, descuenta stock y vacía carrito)
-- **Admin Orders** (listar y cambiar estado)
-- **MercadoPago Checkout Pro + Webhook**
-- URLs de retorno “dummy” para pagos (`/payment/success`, etc.)
+Sitio web completo para el **Centro Médico Santo Domingo** de Catriel, Río Negro.
+Incluye página institucional con servicios médicos, catálogo de productos con carrito de compras, pagos online vía Mercado Pago, y sistema de usuarios con verificación de email.
 
 ---
 
-## URLs
-- **Local:** `http://localhost:3000`
-- **Render:** `https://ecommerce-e5u7.onrender.com`
+## Stack tecnológico
 
-En los ejemplos uso:
+| Capa | Tecnología |
+|------|-----------|
+| Frontend | React 19 + TypeScript + Vite |
+| Backend | Express 5 + TypeScript |
+| Base de datos | PostgreSQL (Supabase) |
+| ORM | Prisma |
+| Autenticación | JWT + bcrypt |
+| Pagos | Mercado Pago Checkout Pro |
+| Email | Nodemailer (Gmail SMTP) |
+| Deploy frontend | Render (Static Site) |
+| Deploy backend | Render (Web Service) |
 
-```bash
-BASE_URL=http://localhost:3000
-# o
-BASE_URL=https://ecommerce-e5u7.onrender.com
+---
+
+## Estructura del proyecto
+
 ```
+Ecommerce/
+├── frontend/          # React + Vite
+│   ├── src/
+│   │   ├── pages/     # Login, Register, VerifyEmail, Home, Me, Products, Cart, Orders, etc.
+│   │   ├── components/
+│   │   ├── routes/    # ProtectedRoute, AdminRoute
+│   │   ├── auth/      # AuthContext
+│   │   ├── api/       # Axios client
+│   │   └── constants/ # servicios.ts (servicios médicos + tratamientos)
+│   └── public/
+│       ├── iconos/    # Imágenes PNG de servicios y UI
+│       └── videos/    # Videos MP4 de tratamientos
+└── backend/
+    ├── src/
+    │   ├── routes/    # auth, users, products, categories, cart, orders, payments, webhooks
+    │   ├── middleware/ # requireAuth, requireAdmin
+    │   └── services/  # email.ts
+    └── prisma/
+        └── schema.prisma
+```
+
+---
+
+## URLs de producción
+
+- **Frontend:** `https://ecommerce-5bt9.onrender.com`
+- **Backend:** `https://ecommerce-e5u7.onrender.com`
 
 ---
 
 ## Setup local
 
-### 1) Instalar dependencias
+### Backend
+
 ```bash
+cd backend
 npm install
-```
-
-### 2) Variables de entorno
-Copiá `.env.example` a `.env` y completá valores:
-
-```bash
-cp .env.example .env
-```
-
-### 3) Migraciones + Prisma Client
-```bash
+cp env.example .env   # completar con valores reales
 npx prisma migrate dev
 npx prisma generate
+npm run dev           # corre en http://localhost:3000
 ```
 
-### 4) Correr el server
+### Frontend
+
 ```bash
-npm run dev
+cd frontend
+npm install
+npm run dev           # corre en http://localhost:5173
 ```
 
 ---
 
-## Cómo obtener un usuario ADMIN
-1) Creá un usuario normal con `POST /users`
-2) Abrí Prisma Studio:
-```bash
-npx prisma studio
+## Variables de entorno — Backend (`.env`)
+
+```env
+# Base de datos (Supabase — usar URL directa para migraciones)
+DATABASE_URL="postgresql://postgres:PASSWORD@db.PROJECT.supabase.co:5432/postgres"
+
+# JWT
+JWT_SECRET=clave_larga_y_secreta
+
+# Mercado Pago
+MP_ACCESS_TOKEN=APP_USR-...
+MP_WEBHOOK_SECRET=...
+
+# URLs
+PUBLIC_BASE_URL=https://ecommerce-e5u7.onrender.com
+FRONTEND_BASE_URL=https://ecommerce-e5u7.onrender.com
+FRONTEND_URL=https://ecommerce-5bt9.onrender.com
+
+# Email (Gmail con contraseña de aplicación)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=tucuenta@gmail.com
+SMTP_PASS=xxxx xxxx xxxx xxxx
 ```
-3) En tabla **User**, cambiá `role` a `ADMIN`
-4) Hacé login de ese usuario para obtener `ADMIN_TOKEN`
+
+> **Nota Supabase:** Para migraciones locales usar la URL directa (`db.PROJECT.supabase.co:5432`). La URL del pooler (`pooler.supabase.com`) no acepta conexiones directas desde redes con puerto 5432 bloqueado. Si el puerto está bloqueado, ejecutar el SQL de migración directamente en el SQL Editor de Supabase.
+
+> **Nota Gmail:** `SMTP_PASS` debe ser una **contraseña de aplicación** generada en Google Account → Seguridad → Contraseñas de aplicaciones (requiere verificación en 2 pasos activa).
 
 ---
 
-# Rutas disponibles (según `src/index.ts`)
+## Modelo de datos (Prisma)
 
-## Healthcheck
+### User
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | Int | PK autoincrement |
+| email | String unique | Email del usuario |
+| password | String | Hash bcrypt |
+| role | USER / ADMIN | Rol del usuario |
+| points | Int | Puntos de fidelidad |
+| emailVerified | Boolean | Email confirmado |
+| verificationToken | String? unique | Token de verificación |
 
-### ✅ GET `/`
-```bash
-curl "$BASE_URL/"
-```
-Respuesta esperada: `API funcionando`
-
----
-
-## Users
-
-### ✅ POST `/users` (público) — crear usuario
-```bash
-curl -X POST "$BASE_URL/users" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@test.com","password":"123456"}'
-```
-
-### ✅ GET `/users/me` (requiere token)
-```bash
-curl "$BASE_URL/users/me" -H "Authorization: Bearer $TOKEN"
-```
+### Otros modelos
+- **Category** — categorías de productos
+- **Product** — productos con precio, stock e imagen
+- **CartItem** — carrito persistido por usuario
+- **Order / OrderItem** — órdenes de compra
+- **Payment** — registro de pagos Mercado Pago
 
 ---
 
-## Auth
+## Flujo de autenticación
 
-### ✅ POST `/auth/login` (público) — login y token
-```bash
-curl -X POST "$BASE_URL/auth/login" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@test.com","password":"123456"}'
+```
+1. POST /auth/register  → crea usuario + envía email de verificación
+2. Usuario hace click en el link del email
+3. GET /auth/verify-email?token=xxx  → activa cuenta + devuelve JWT
+4. POST /auth/login  → requiere emailVerified = true
 ```
 
-Respuesta esperada:
-```json
-{
-  "token": "....",
-  "user": { "id": 1, "email": "user@test.com", "role": "USER" }
-}
-```
-
-### ✅ GET `/auth/me` (requiere token) — payload del JWT
-```bash
-curl "$BASE_URL/auth/me" -H "Authorization: Bearer $TOKEN"
-```
+> Los usuarios sin email verificado no pueden iniciar sesión.
 
 ---
 
-## 3) Roles (cómo obtener ADMIN)
-1) Crear usuario (POST `/users`)
-2) `npx prisma studio`
-3) En tabla **User**, cambiar `role` a `ADMIN`
-4) Volver a loguearse para obtener `$ADMIN_TOKEN`
+## Rutas del backend
+
+### Auth
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| POST | `/auth/register` | — | Registra usuario y envía email |
+| GET | `/auth/verify-email?token=` | — | Verifica email y devuelve JWT |
+| POST | `/auth/login` | — | Login (requiere email verificado) |
+| GET | `/auth/me` | JWT | Datos del usuario actual |
+
+### Products
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/products` | — | Lista productos (filtro: `?categoryId=`) |
+| GET | `/products/:id` | — | Detalle de producto |
+| POST | `/products` | ADMIN | Crear producto |
+| PATCH | `/products/:id` | ADMIN | Editar producto |
+| DELETE | `/products/:id` | ADMIN | Eliminar producto |
+
+### Categories
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/categories` | — | Lista categorías |
+| POST | `/categories` | ADMIN | Crear categoría |
+
+### Cart
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/cart` | JWT | Ver carrito |
+| POST | `/cart` | JWT | Agregar item |
+| PATCH | `/cart/:productId` | JWT | Cambiar cantidad (0 = eliminar) |
+| DELETE | `/cart/:productId` | JWT | Eliminar item |
+| DELETE | `/cart` | JWT | Vaciar carrito |
+
+### Orders
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| POST | `/orders` | JWT | Crear orden desde carrito |
+| GET | `/orders` | JWT | Mis órdenes |
+| GET | `/orders/:id` | JWT | Detalle de orden |
+
+### Admin
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| GET | `/admin/orders` | ADMIN | Todas las órdenes |
+| GET | `/admin/orders/:id` | ADMIN | Detalle de orden |
+| PATCH | `/admin/orders/:id/status` | ADMIN | Cambiar estado |
+
+### Payments
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| POST | `/payments/mercadopago/checkout` | JWT | Generar preferencia MP |
+| POST | `/webhooks/mercadopago` | — | Webhook automático de MP |
 
 ---
 
-## Categories
+## Flujo de pago (Mercado Pago)
 
-### ✅ GET `/categories` (público)
-```bash
-curl "$BASE_URL/categories"
 ```
-
-### ✅ POST `/categories` (ADMIN)
-```bash
-curl -X POST "$BASE_URL/categories" \
-  -H "Authorization: Bearer $ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Electrónica"}'
-```
-
-Errores comunes:
-- `409` si ya existe (`name` unique)
-- `403` si no sos admin
-
----
-
-## Products
-
-### ✅ GET `/products` (público)
-```bash
-curl "$BASE_URL/products"
-```
-
-### ✅ GET `/products?categoryId=1` (público)
-```bash
-curl "$BASE_URL/products?categoryId=1"
-```
-
-### ✅ GET `/products/:id` (público)
-```bash
-curl "$BASE_URL/products/1"
-```
-
-### ✅ POST `/products` (ADMIN)
-> Importante: `price` mandarlo como **string** (Decimal).
-
-```bash
-curl -X POST "$BASE_URL/products" \
-  -H "Authorization: Bearer $ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Mouse Gamer","description":"RGB","price":"19999.90","stock":10,"categoryId":1}'
-```
-
-### ✅ PATCH `/products/:id` (ADMIN) *(si lo tenés implementado)*
-```bash
-curl -X PATCH "$BASE_URL/products/1" \
-  -H "Authorization: Bearer $ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"stock":25,"price":"24999.00"}'
-```
-
----
-
-## Cart (carrito persistido)
-> Todas las rutas requieren token de usuario.
-
-### ✅ GET `/cart`
-```bash
-curl "$BASE_URL/cart" -H "Authorization: Bearer $TOKEN"
-```
-
-### ✅ POST `/cart` — agregar/incrementar
-```bash
-curl -X POST "$BASE_URL/cart" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"productId":1,"quantity":2}'
-```
-
-### ✅ PATCH `/cart/:productId` — set cantidad (0 borra)
-```bash
-curl -X PATCH "$BASE_URL/cart/1" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"quantity":5}'
-```
-
-### ✅ DELETE `/cart/:productId` — borrar item
-```bash
-curl -X DELETE "$BASE_URL/cart/1" -H "Authorization: Bearer $TOKEN"
-```
-
-### ✅ DELETE `/cart` — vaciar carrito
-```bash
-curl -X DELETE "$BASE_URL/cart" -H "Authorization: Bearer $TOKEN"
+1. Usuario agrega productos al carrito
+2. POST /orders  → crea orden PENDING, descuenta stock, vacía carrito
+3. POST /payments/mercadopago/checkout  → devuelve init_point
+4. Usuario paga en Mercado Pago
+5. MP llama al webhook  → orden pasa a PAID
 ```
 
 ---
 
-## Orders (checkout)
-> Requiere token de usuario.
+## Cómo crear un usuario ADMIN
 
-### ✅ POST `/orders` — crear orden desde carrito
-Crea una orden:
-- valida stock
-- crea `Order + OrderItems`
-- descuenta stock
-- vacía carrito
-
-```bash
-curl -X POST "$BASE_URL/orders" -H "Authorization: Bearer $TOKEN"
-```
-
-Errores comunes:
-- `400` carrito vacío
-- `409` stock insuficiente
-
-### ✅ GET `/orders` — mis órdenes
-```bash
-curl "$BASE_URL/orders" -H "Authorization: Bearer $TOKEN"
-```
-
-### ✅ GET `/orders/:id` — detalle (solo dueño)
-```bash
-curl "$BASE_URL/orders/1" -H "Authorization: Bearer $TOKEN"
-```
+1. Registrar usuario normalmente desde el frontend
+2. Verificar el email
+3. Ir a Supabase → Table Editor → tabla `User`
+4. Cambiar el campo `role` de `USER` a `ADMIN`
+5. Volver a iniciar sesión
 
 ---
 
-## Admin Orders
-> Requiere token ADMIN.
+## Páginas del frontend
 
-### ✅ GET `/admin/orders`
-```bash
-curl "$BASE_URL/admin/orders" -H "Authorization: Bearer $ADMIN_TOKEN"
-```
-
-### ✅ GET `/admin/orders?status=PENDING`
-```bash
-curl "$BASE_URL/admin/orders?status=PENDING" -H "Authorization: Bearer $ADMIN_TOKEN"
-```
-
-### ✅ GET `/admin/orders/:id`
-```bash
-curl "$BASE_URL/admin/orders/1" -H "Authorization: Bearer $ADMIN_TOKEN"
-```
-
-### ✅ PATCH `/admin/orders/:id/status`
-Regla actual: solo permite:
-- `PENDING -> PAID`
-- `PENDING -> CANCELLED` (repone stock)
-
-Marcar pagada:
-```bash
-curl -X PATCH "$BASE_URL/admin/orders/1/status" \
-  -H "Authorization: Bearer $ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"status":"PAID"}'
-```
-
-Cancelar (repone stock):
-```bash
-curl -X PATCH "$BASE_URL/admin/orders/1/status" \
-  -H "Authorization: Bearer $ADMIN_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"status":"CANCELLED"}'
-```
+| Ruta | Descripción | Acceso |
+|------|-------------|--------|
+| `/` | Home — servicios y CTA WhatsApp | Público |
+| `/servicios/:slug` | Detalle de servicio con tratamientos y videos | Público |
+| `/products` | Catálogo de productos | Público |
+| `/products/:id` | Detalle de producto | Público |
+| `/login` | Inicio de sesión | Público |
+| `/register` | Registro + verificación email | Público |
+| `/verify-email` | Confirmación de cuenta | Público |
+| `/me` | Perfil del usuario | Autenticado |
+| `/cart` | Carrito de compras | Autenticado |
+| `/orders` | Mis órdenes | Autenticado |
+| `/orders/:id` | Detalle de orden | Autenticado |
+| `/admin/products` | Gestión de productos | ADMIN |
+| `/admin/products/:id` | Editar producto | ADMIN |
 
 ---
 
-## Payments (MercadoPago Checkout Pro)
-> Requiere token de usuario y una `Order` en estado `PENDING`.
+## Servicios médicos incluidos
 
-### ✅ POST `/payments/mercadopago/checkout`
-Body:
-```json
-{ "orderId": 123 }
-```
+- Estética Facial (con videos de tratamientos)
+- Estética Corporal (con videos de tratamientos)
+- Depilación Definitiva Láser
+- Ginecología y Estética Médica
+- Quiropraxia
+- Odontología
+- Kinesiología y Rehabilitación
+- Medicina General
 
-```bash
-curl -X POST "$BASE_URL/payments/mercadopago/checkout" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"orderId":123}'
-```
-
-Respuesta esperada: `{ preferenceId, init_point, sandbox_init_point }`
+Cada servicio tiene: descripción, tratamientos, beneficios, sesiones, FAQ y botón de turno por WhatsApp.
 
 ---
 
-## Webhooks (MercadoPago)
-### ✅ POST `/webhooks/mercadopago` *(lo llama MercadoPago)*
-Este endpoint lo llama MercadoPago automáticamente.
+## Notas de deploy (Render)
 
-Webhook URL (Render):
-```
-https://ecommerce-e5u7.onrender.com/webhooks/mercadopago
-```
-
-### Cómo probar el webhook (flujo real)
-1) Usuario:
-   - Agregar al carrito (`POST /cart`)
-   - Checkout (`POST /orders`) → guardar `orderId` (queda `PENDING`)
-2) Usuario:
-   - `POST /payments/mercadopago/checkout` → abrir `init_point` y pagar
-3) Verificación:
-   - `GET /orders/:id` (usuario) o `GET /admin/orders/:id` (admin)
-   - la orden debería pasar a `PAID` si el pago fue aprobado
-
----
-
-## URLs de retorno (sin frontend)
-
-### ✅ GET `/payment/success`
-```bash
-curl "$BASE_URL/payment/success"
-```
-
-### ✅ GET `/payment/failure`
-```bash
-curl "$BASE_URL/payment/failure"
-```
-
-### ✅ GET `/payment/pending`
-```bash
-curl "$BASE_URL/payment/pending"
-```
-
----
-
-# Flujo end-to-end recomendado
-
-## 1) Admin
-1) Login admin → obtener `ADMIN_TOKEN`
-2) Crear categoría: `POST /categories`
-3) Crear producto: `POST /products`
-
-## 2) Usuario
-1) Crear user: `POST /users`
-2) Login user → obtener `TOKEN`
-3) Agregar al carrito: `POST /cart`
-4) Checkout: `POST /orders` → `orderId` (PENDING)
-5) Pago: `POST /payments/mercadopago/checkout` → abrir `init_point` y pagar
-
-## 3) Verificación
-- `GET /orders/:id` → debe cambiar a `PAID` por webhook
-
----
-
-## Notas de Render
-- Cargar env vars:
-  - `DATABASE_URL`
-  - `JWT_SECRET`
-  - `MP_ACCESS_TOKEN`
-  - `MP_WEBHOOK_SECRET`
-  - `PUBLIC_BASE_URL=https://ecommerce-e5u7.onrender.com`
-  - `FRONTEND_BASE_URL=https://ecommerce-e5u7.onrender.com`
+- El backend en el plan gratuito **se duerme** tras 15 minutos de inactividad. La primera request puede tardar ~30 segundos en responder.
+- Las 750 horas/mes del plan gratuito son compartidas entre todos los servicios web.
+- El frontend es un **Static Site** — siempre disponible, sin límite de horas.
+- El webhook de Mercado Pago debe apuntar a la URL del backend en Render.
