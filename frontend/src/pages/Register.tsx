@@ -8,6 +8,7 @@ export default function Register() {
   const [password2, setPassword2] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [done, setDone] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,24 +29,33 @@ export default function Register() {
 
     setLoading(true);
     try {
-      const res = await api.post("/auth/register", {
-        email: email.trim(),
-        password,
-      });
-
-      const token = res.data?.token;
-      if (!token) {
-        setMsg({ text: "No llegó token del servidor", ok: false });
-        return;
-      }
-
-      localStorage.setItem("token", token);
-      window.location.href = "/me";
+      await api.post("/auth/register", { email: email.trim(), password });
+      setDone(true);
     } catch (e: any) {
       setMsg({ text: e?.response?.data?.error ?? "No se pudo registrar", ok: false });
     } finally {
       setLoading(false);
     }
+  }
+
+  if (done) {
+    return (
+      <div className="form-page">
+        <div className="form-card" style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>📧</div>
+          <p className="form-title">¡Revisá tu email!</p>
+          <p className="form-subtitle" style={{ marginBottom: 24 }}>
+            Te mandamos un link a <strong>{email}</strong> para confirmar tu cuenta.
+          </p>
+          <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
+            Si no lo ves en la bandeja principal, revisá la carpeta de spam.
+          </p>
+          <p className="form-link" style={{ marginTop: 24 }}>
+            <Link to="/login">Volver al inicio de sesión</Link>
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
