@@ -13,6 +13,7 @@ import AdminRoute from "./routes/AdminRoute";
 import AdminProducts from "./pages/AdminProducts";
 import AdminProductEdit from "./pages/AdminProductEdit";
 import Register from "./pages/Register";
+import VerifyEmail from "./pages/VerifyEmail";
 import ProductDetail from "./pages/ProductDetail";
 import ServicioDetalle from "./pages/ServicioDetalle";
 import "./App.css";
@@ -142,6 +143,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
 
