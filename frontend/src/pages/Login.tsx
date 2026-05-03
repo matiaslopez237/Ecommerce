@@ -17,8 +17,9 @@ export default function Login() {
       await login(email, password);
       setMsg({ text: "Ingreso exitoso", ok: true });
       navigate("/me");
-    } catch {
-      setMsg({ text: "Email o contraseña incorrectos", ok: false });
+    } catch (e: any) {
+      const serverMsg = e?.response?.data?.error;
+      setMsg({ text: serverMsg ?? "Email o contraseña incorrectos", ok: false });
     }
   }
 
