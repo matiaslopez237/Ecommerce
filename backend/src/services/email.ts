@@ -1,14 +1,26 @@
 import nodemailer from "nodemailer";
 
 export async function sendVerificationEmail(email: string, token: string) {
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+
+  if (!smtpHost || !smtpUser || !smtpPass) {
+    console.error("❌ Email no enviado: faltan variables SMTP_HOST, SMTP_USER o SMTP_PASS");
+    return;
+  }
+
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
+    host: smtpHost,
     port: Number(process.env.SMTP_PORT) || 587,
     secure: false,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: smtpUser,
+      pass: smtpPass,
     },
+    connectionTimeout: 8000,   // 8 seg máx para conectar
+    greetingTimeout: 8000,
+    socketTimeout: 10000,
   });
 
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
