@@ -43,8 +43,9 @@ router.post("/register", async (req, res) => {
     // Enviar email de verificación (no bloqueamos si falla)
     try {
       await sendVerificationEmail(cleanEmail, verificationToken);
-    } catch (emailErr) {
-      console.error("Error enviando email de verificación:", emailErr);
+      console.log("✅ Email de verificación enviado a", cleanEmail);
+    } catch (emailErr: any) {
+      console.error("❌ Error enviando email de verificación:", emailErr?.message ?? emailErr);
     }
 
     return res.status(201).json({
