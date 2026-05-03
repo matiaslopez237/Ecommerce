@@ -10,20 +10,17 @@ export async function sendVerificationEmail(email: string, token: string) {
   }
 
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    family: 4,          // fuerza IPv4 (Render free no tiene IPv6 saliente)
+    service: "gmail",
     auth: {
       user: smtpUser,
       pass: smtpPass,
     },
-  } as any);
+  });
 
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
   const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
 
-  console.log(`📧 Enviando email a ${email} via Gmail (service)`);
+  console.log(`📧 Enviando email a ${email} via Gmail`);
 
   await transporter.sendMail({
     from: `"Centro Médico Santo Domingo" <${smtpUser}>`,
