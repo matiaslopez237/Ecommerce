@@ -18,7 +18,7 @@ export async function sendVerificationEmail(email: string, token: string) {
       user: smtpUser,
       pass: smtpPass,
     },
-  });
+  } as any);
 
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
   const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
