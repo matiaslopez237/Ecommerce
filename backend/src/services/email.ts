@@ -1,37 +1,23 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.RESEND_FROM || "onboarding@resend.dev";
 
-  console.log(`📧 Intentando enviar email a ${email}`);
-  console.log(`📧 SMTP_HOST=${smtpHost} SMTP_USER=${smtpUser} SMTP_PORT=${process.env.SMTP_PORT}`);
-
-  if (!smtpHost || !smtpUser || !smtpPass) {
-    console.error("❌ Email no enviado: faltan variables SMTP_HOST, SMTP_USER o SMTP_PASS");
+  if (!apiKey) {
+    console.error("❌ Email no enviado: falta RESEND_API_KEY");
     return;
   }
-
-  const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: false,
-    auth: {
-      user: smtpUser,
-      pass: smtpPass,
-    },
-    connectionTimeout: 8000,   // 8 seg máx para conectar
-    greetingTimeout: 8000,
-    socketTimeout: 10000,
-  });
 
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
   const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
 
-  console.log(`📧 Transporter creado, enviando...`);
-  await transporter.sendMail({
-    from: `"Centro Médico Santo Domingo" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+  console.log(`📧 Enviando email a ${email} via Resend (from: ${fromEmail})`);
+
+  const resend = new Resend(apiKey);
+
+  const { data, error } = await resend.emails.send({
+    from: `Centro Médico Santo Domingo <${fromEmail}>`,
     to: email,
     subject: "Confirmá tu cuenta — Centro Médico Santo Domingo",
     html: `
@@ -61,4 +47,11 @@ export async function sendVerificationEmail(email: string, token: string) {
       </div>
     `,
   });
+
+  if (error) {
+    console.error("❌ Resend error:", error);
+    throw new Error(error.message);
+  }
+
+  console.log("✅ Email enviado, id:", data?.id);
 }
