@@ -10,7 +10,10 @@ export async function sendVerificationEmail(email: string, token: string) {
   }
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    family: 4,          // fuerza IPv4 (Render free no tiene IPv6 saliente)
     auth: {
       user: smtpUser,
       pass: smtpPass,
