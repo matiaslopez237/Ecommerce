@@ -1,23 +1,29 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM || "onboarding@resend.dev";
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
 
-  if (!apiKey) {
-    console.error("❌ Email no enviado: falta RESEND_API_KEY");
+  if (!smtpUser || !smtpPass) {
+    console.error("❌ Email no enviado: faltan SMTP_USER o SMTP_PASS");
     return;
   }
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: smtpUser,
+      pass: smtpPass,
+    },
+  });
 
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
   const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
 
-  console.log(`📧 Enviando email a ${email} via Resend (from: ${fromEmail})`);
+  console.log(`📧 Enviando email a ${email} via Gmail (service)`);
 
-  const resend = new Resend(apiKey);
-
-  const { data, error } = await resend.emails.send({
-    from: `Centro Médico Santo Domingo <${fromEmail}>`,
+  await transporter.sendMail({
+    from: `"Centro Médico Santo Domingo" <${smtpUser}>`,
     to: email,
     subject: "Confirmá tu cuenta — Centro Médico Santo Domingo",
     html: `
@@ -48,10 +54,5 @@ export async function sendVerificationEmail(email: string, token: string) {
     `,
   });
 
-  if (error) {
-    console.error("❌ Resend error:", error);
-    throw new Error(error.message);
-  }
-
-  console.log("✅ Email enviado, id:", data?.id);
+  console.log("✅ Email enviado a", email);
 }

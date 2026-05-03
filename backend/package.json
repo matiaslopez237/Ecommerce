@@ -22,8 +22,7 @@
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.5",
     "pg": "^8.16.3",
-    "prisma": "^7.8.0",
-    "resend": "^6.12.2"
+    "prisma": "^7.8.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
