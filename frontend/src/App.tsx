@@ -113,7 +113,7 @@ function Nav() {
             {user && (
               <>
                 <span className="nav-user-email">{user.email}</span>
-                <button className="nav-logout-btn" onClick={logout}>
+                <button className="nav-logout-btn" onClick={logout} title="Cerrar sesión">
                   Salir
                 </button>
               </>
@@ -121,7 +121,7 @@ function Nav() {
 
             {user?.role === "ADMIN" && (
               <Link to="/admin/products">
-                <button className="nav-logout-btn" style={{ borderColor: "var(--primary)", color: "var(--primary)" }}>
+                <button className="nav-logout-btn" style={{ borderColor: "var(--primary)", color: "var(--primary)" }} title="Panel de administración">
                   Admin
                 </button>
               </Link>

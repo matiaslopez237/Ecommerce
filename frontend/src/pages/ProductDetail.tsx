@@ -82,7 +82,7 @@ export default function ProductDetail() {
         ← Volver a productos
       </Link>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 20, marginTop: 16 }}>
+      <div className="product-detail-grid">
         {/* Imagen */}
         <div style={{
           border: "1.5px solid var(--border)",

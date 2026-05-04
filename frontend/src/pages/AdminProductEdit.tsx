@@ -148,7 +148,7 @@ export default function AdminProductEdit() {
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 16 }}>
+      <div className="admin-edit-grid">
         {/* FORM */}
         <div style={{
           border: "1.5px solid var(--border)",

@@ -56,14 +56,14 @@ export default function Me() {
         Mi perfil
       </h2>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 20 }}>
+      <div className="me-grid">
 
         {/* ── Datos del usuario ── */}
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 20 }}>
             <div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>Email</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text)" }}>{user.email}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", wordBreak: "break-all" }}>{user.email}</div>
             </div>
 
             <span style={{
@@ -84,7 +84,7 @@ export default function Me() {
 
           <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "0 0 20px" }} />
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div className="me-data-grid">
             <div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>User ID</div>
               <div style={{ fontWeight: 600, color: "var(--text)" }}>{user.id}</div>
