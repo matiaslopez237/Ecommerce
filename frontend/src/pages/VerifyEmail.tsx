@@ -4,7 +4,7 @@ import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { CheckCircleIcon, XCircleIcon, ClockIcon } from "../components/Icons";
 
-function StatusIcon({ icon, color, bg }: { icon: React.ReactNode; color: string; bg: string }) {
+function StatusIcon({ icon, bg }: { icon: React.ReactNode; color?: string; bg: string }) {
   return (
     <div style={{
       width: 72, height: 72, borderRadius: "50%",
