@@ -75,3 +75,48 @@ export function PackageIcon({ size = 20, color = "currentColor" }: IconProps) {
     </svg>
   );
 }
+
+/* ── Me page action icons ── */
+
+export function CartIcon({ size = 20, color = "currentColor" }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2H3L1 9v1h22V9L21 2h-3" />
+      <path d="M1 10v9a2 2 0 002 2h18a2 2 0 002-2v-9" />
+      <circle cx="9" cy="20" r="1.5" fill={color} stroke="none" />
+      <circle cx="15" cy="20" r="1.5" fill={color} stroke="none" />
+      <path d="M3 6h18" />
+    </svg>
+  );
+}
+
+export function OrdersListIcon({ size = 20, color = "currentColor" }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l4-4 4 4" />
+      <path d="M7 5v8" />
+      <rect x="13" y="3" width="8" height="5" rx="1" />
+      <path d="M13 11h8M13 15h5M13 19h7" />
+    </svg>
+  );
+}
+
+export function BriefcaseSearchIcon({ size = 20, color = "currentColor" }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" />
+      <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+      <circle cx="11" cy="14" r="3" />
+      <path d="M13.27 16.27l2.73 2.73" />
+    </svg>
+  );
+}
+
+export function UserIcon({ size = 20, color = "currentColor" }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}

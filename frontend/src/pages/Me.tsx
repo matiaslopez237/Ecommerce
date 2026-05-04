@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { Link } from "react-router-dom";
-import { LogOutIcon, WrenchIcon, ShieldIcon } from "../components/Icons";
+import { LogOutIcon, WrenchIcon, ShieldIcon, CartIcon, OrdersListIcon, BriefcaseSearchIcon, UserIcon } from "../components/Icons";
 
 function formatDate(s?: string) {
   if (!s) return "-";
@@ -10,7 +10,7 @@ function formatDate(s?: string) {
   return d.toLocaleString();
 }
 
-function IconBox({ src, alt }: { src: string; alt: string }) {
+function IconBox({ icon }: { icon: React.ReactNode }) {
   return (
     <span style={{
       width: 32, height: 32, borderRadius: 8,
@@ -18,7 +18,7 @@ function IconBox({ src, alt }: { src: string; alt: string }) {
       display: "inline-flex", alignItems: "center",
       justifyContent: "center", flexShrink: 0,
     }}>
-      <img src={src} alt={alt} style={{ width: 18, height: 18, objectFit: "contain" }} />
+      {icon}
     </span>
   );
 }
@@ -95,7 +95,7 @@ export default function Me() {
             }}>
               {user.role === "ADMIN"
                 ? <ShieldIcon size={14} color="var(--primary)" />
-                : <img src="/iconos/me-usuario.png" alt="" style={{ width: 14, height: 14, objectFit: "contain" }} />
+                : <UserIcon size={14} color="var(--primary)" />
               }
               {roleLabel}
             </span>
@@ -131,15 +131,15 @@ export default function Me() {
 
           <div style={{ display: "grid", gap: 8 }}>
             <Link to="/products" style={linkBtnStyle}>
-              <IconBox src="/iconos/me-productos.png" alt="" />
+              <IconBox icon={<BriefcaseSearchIcon size={18} color="var(--primary)" />} />
               Ver productos
             </Link>
             <Link to="/orders" style={linkBtnStyle}>
-              <IconBox src="/iconos/me-ordenes.png" alt="" />
+              <IconBox icon={<OrdersListIcon size={18} color="var(--primary)" />} />
               Mis órdenes
             </Link>
             <Link to="/cart" style={linkBtnStyle}>
-              <IconBox src="/iconos/me-carrito.png" alt="" />
+              <IconBox icon={<CartIcon size={18} color="var(--primary)" />} />
               Ir al carrito
             </Link>
             {user.role === "ADMIN" && (
