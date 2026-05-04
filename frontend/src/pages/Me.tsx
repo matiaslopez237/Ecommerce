@@ -1,12 +1,26 @@
 import { useMemo } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { Link } from "react-router-dom";
+import { LogOutIcon, WrenchIcon, ShieldIcon } from "../components/Icons";
 
 function formatDate(s?: string) {
   if (!s) return "-";
   const d = new Date(s);
   if (Number.isNaN(d.getTime())) return s;
   return d.toLocaleString();
+}
+
+function IconBox({ src, alt }: { src: string; alt: string }) {
+  return (
+    <span style={{
+      width: 32, height: 32, borderRadius: 8,
+      background: "var(--primary-light)",
+      display: "inline-flex", alignItems: "center",
+      justifyContent: "center", flexShrink: 0,
+    }}>
+      <img src={src} alt={alt} style={{ width: 18, height: 18, objectFit: "contain" }} />
+    </span>
+  );
 }
 
 export default function Me() {
@@ -38,8 +52,8 @@ export default function Me() {
   const linkBtnStyle = {
     display: "flex",
     alignItems: "center",
-    gap: 10,
-    padding: "12px 16px",
+    gap: 12,
+    padding: "11px 14px",
     borderRadius: 10,
     border: "1px solid var(--border)",
     textDecoration: "none",
@@ -61,7 +75,7 @@ export default function Me() {
         {/* ── Datos del usuario ── */}
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 20 }}>
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>Email</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", wordBreak: "break-all" }}>{user.email}</div>
             </div>
@@ -70,15 +84,20 @@ export default function Me() {
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
-              padding: "6px 14px",
+              padding: "6px 12px",
               borderRadius: 999,
               border: "1px solid var(--border)",
               background: "var(--primary-light)",
               color: "var(--primary)",
               fontSize: 12,
               fontWeight: 700,
+              flexShrink: 0,
             }}>
-              {user.role === "ADMIN" ? "🛡️" : <img src="/iconos/me-usuario.png" alt="" style={{ width: 16, height: 16, objectFit: "contain" }} />} {roleLabel}
+              {user.role === "ADMIN"
+                ? <ShieldIcon size={14} color="var(--primary)" />
+                : <img src="/iconos/me-usuario.png" alt="" style={{ width: 14, height: 14, objectFit: "contain" }} />
+              }
+              {roleLabel}
             </span>
           </div>
 
@@ -110,22 +129,30 @@ export default function Me() {
             Acciones rápidas
           </div>
 
-          <div style={{ display: "grid", gap: 10 }}>
+          <div style={{ display: "grid", gap: 8 }}>
             <Link to="/products" style={linkBtnStyle}>
-              <img src="/iconos/me-productos.png" alt="" style={{ width: 22, height: 22, objectFit: "contain" }} />
+              <IconBox src="/iconos/me-productos.png" alt="" />
               Ver productos
             </Link>
             <Link to="/orders" style={linkBtnStyle}>
-              <img src="/iconos/me-ordenes.png" alt="" style={{ width: 22, height: 22, objectFit: "contain" }} />
+              <IconBox src="/iconos/me-ordenes.png" alt="" />
               Mis órdenes
             </Link>
             <Link to="/cart" style={linkBtnStyle}>
-              <img src="/iconos/me-carrito.png" alt="" style={{ width: 22, height: 22, objectFit: "contain" }} />
+              <IconBox src="/iconos/me-carrito.png" alt="" />
               Ir al carrito
             </Link>
             {user.role === "ADMIN" && (
               <Link to="/admin/products" style={{ ...linkBtnStyle, borderColor: "var(--primary)", color: "var(--primary)" }}>
-                🛠️ Admin · Productos
+                <span style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  background: "var(--primary-light)",
+                  display: "inline-flex", alignItems: "center",
+                  justifyContent: "center", flexShrink: 0,
+                }}>
+                  <WrenchIcon size={16} color="var(--primary)" />
+                </span>
+                Admin · Productos
               </Link>
             )}
           </div>
@@ -136,7 +163,7 @@ export default function Me() {
             onClick={() => { logout(); window.location.href = "/"; }}
             style={{
               width: "100%",
-              padding: "12px 16px",
+              padding: "11px 14px",
               borderRadius: 10,
               border: "1px solid #e0b0b0",
               background: "#fff5f5",
@@ -144,10 +171,13 @@ export default function Me() {
               fontWeight: 700,
               fontSize: 14,
               cursor: "pointer",
-              textAlign: "left",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
             }}
           >
-            🚪 Cerrar sesión
+            <LogOutIcon size={18} color="#c0392b" />
+            Cerrar sesión
           </button>
         </div>
 

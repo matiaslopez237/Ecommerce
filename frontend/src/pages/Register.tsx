@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
+import { MailIcon } from "../components/Icons";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -42,7 +43,14 @@ export default function Register() {
     return (
       <div className="form-page">
         <div className="form-card" style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 56, marginBottom: 16 }}>📧</div>
+          <div style={{
+            width: 72, height: 72, borderRadius: "50%",
+            background: "var(--primary-light)", display: "flex",
+            alignItems: "center", justifyContent: "center",
+            margin: "0 auto 20px",
+          }}>
+            <MailIcon size={32} color="var(--primary)" />
+          </div>
           <p className="form-title">¡Revisá tu email!</p>
           <p className="form-subtitle" style={{ marginBottom: 24 }}>
             Te mandamos un link a <strong>{email}</strong> para confirmar tu cuenta.
