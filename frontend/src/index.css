@@ -10,7 +10,7 @@
   --border: #E2D5C8;
   --border-light: #EDE5DB;
 
-  font-family: 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--text);
@@ -19,6 +19,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
 }
 
 *, *::before, *::after {
@@ -52,6 +53,7 @@ img {
 h1, h2, h3, h4, h5 {
   line-height: 1.2;
   margin: 0;
+  text-wrap: balance;
 }
 
 p { margin: 0; }
@@ -63,8 +65,8 @@ p { margin: 0; }
   text-align: center;
   padding: 8px 20px;
   font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -116,16 +118,16 @@ p { margin: 0; }
 }
 
 .logo-name {
-  font-size: 19px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 900;
   color: var(--primary);
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
 }
 
 .logo-sub {
-  font-size: 9.5px;
+  font-size: 11px;
   color: var(--text-muted);
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
@@ -142,8 +144,8 @@ p { margin: 0; }
 .nav-categories li a {
   display: block;
   padding: 8px 13px;
-  font-size: 13.5px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text);
   transition: color 0.2s;
   white-space: nowrap;
@@ -253,13 +255,14 @@ p { margin: 0; }
 }
 
 .hero-title {
-  font-size: 46px;
+  font-size: 48px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-shadow: 0 2px 20px rgba(0,0,0,0.25);
   line-height: 1;
   margin-bottom: 14px;
+  text-wrap: balance;
 }
 
 .hero-subtitle {
@@ -462,11 +465,11 @@ p { margin: 0; }
 }
 
 .product-category-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--primary);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   margin-bottom: 4px;
 }
 
@@ -486,6 +489,7 @@ p { margin: 0; }
   font-size: 15px;
   font-weight: 700;
   color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── OFFERS ── */
@@ -704,18 +708,19 @@ p { margin: 0; }
 }
 
 .form-title {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   margin-bottom: 6px;
   color: var(--text);
   text-align: center;
 }
 
 .form-subtitle {
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--text-muted);
   margin-bottom: 28px;
   text-align: center;
+  line-height: 1.55;
 }
 
 .form-input {
@@ -732,7 +737,11 @@ p { margin: 0; }
   transition: border-color 0.2s;
   outline: none;
 }
-.form-input:focus { border-color: var(--primary); }
+.form-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.15);
+}
 
 .btn-primary {
   display: block;
@@ -771,9 +780,10 @@ p { margin: 0; }
 }
 
 .page-title {
-  font-size: 26px;
-  font-weight: 700;
+  font-size: 28px;
+  font-weight: 800;
   margin-bottom: 24px;
+  text-wrap: balance;
 }
 
 /* ── PRODUCTS PAGE ── */
