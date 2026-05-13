@@ -9,7 +9,7 @@ const router = Router();
 function makeToken(userId: number, username: string) {
   const secret = process.env.JWT_SECRET;
   if (!secret) throw new Error("JWT_SECRET no configurado");
-  return jwt.sign({ sub: userId, username }, secret, { expiresIn: "7d" });
+  return jwt.sign({ sub: userId, username }, secret, { expiresIn: "1h" });
 }
 
 function userPayload(u: { id: number; username: string; points: number; role: string; createdAt: Date; updatedAt: Date }) {

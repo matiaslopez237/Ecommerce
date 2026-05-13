@@ -8,7 +8,7 @@ function makeToken(userId, username) {
     const secret = process.env.JWT_SECRET;
     if (!secret)
         throw new Error("JWT_SECRET no configurado");
-    return jwt.sign({ sub: userId, username }, secret, { expiresIn: "7d" });
+    return jwt.sign({ sub: userId, username }, secret, { expiresIn: "1h" });
 }
 function userPayload(u) {
     return { id: u.id, username: u.username, points: u.points, role: u.role, createdAt: u.createdAt, updatedAt: u.updatedAt };
