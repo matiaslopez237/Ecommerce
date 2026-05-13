@@ -57,7 +57,7 @@ router.get("/", async (req, res) => {
                         status: true,
                         total: true,
                         createdAt: true,
-                        user: { select: { id: true, email: true } },
+                        user: { select: { id: true, username: true } },
                     },
                 },
             },
@@ -92,7 +92,7 @@ router.get("/:orderId", async (req, res) => {
         include: {
             order: {
                 include: {
-                    user: { select: { id: true, email: true, role: true } },
+                    user: { select: { id: true, username: true, role: true } },
                     items: {
                         include: {
                             product: { select: { id: true, name: true, price: true } },

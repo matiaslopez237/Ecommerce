@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 
   const args: Prisma.OrderFindManyArgs = {
     include: {
-      user: { select: { id: true, email: true } },
+      user: { select: { id: true, username: true } },
       items: { include: { product: { select: { id: true, name: true } } } },
     },
     orderBy: { createdAt: "desc" },
@@ -38,7 +38,7 @@ router.get("/:id", async (req, res) => {
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
-      user: { select: { id: true, email: true } },
+      user: { select: { id: true, username: true } },
       items: { include: { product: { select: { id: true, name: true } } } },
     },
   });
@@ -90,7 +90,7 @@ router.patch("/:id/status", async (req, res) => {
         where: { id },
         data: { status },
         include: {
-          user: { select: { id: true, email: true } },
+          user: { select: { id: true, username: true } },
           items: { include: { product: { select: { id: true, name: true } } } },
         },
       });
