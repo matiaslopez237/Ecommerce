@@ -111,7 +111,7 @@ function Nav() {
 
             {user && (
               <>
-                <span className="nav-user-email">@{user.username}</span>
+                <span className="nav-user-email">{user.username}</span>
                 <button className="nav-logout-btn" onClick={logout} title="Cerrar sesión">
                   Salir
                 </button>

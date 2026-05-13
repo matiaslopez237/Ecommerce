@@ -77,7 +77,7 @@ export default function Me() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 20 }}>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>Usuario</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", wordBreak: "break-all" }}>@{user.username}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", wordBreak: "break-all" }}>{user.username}</div>
             </div>
 
             <span style={{

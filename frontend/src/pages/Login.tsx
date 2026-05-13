@@ -39,7 +39,7 @@ export default function Login() {
           </div>
           <p className="form-title">¡Bienvenido!</p>
           <p className="form-subtitle">
-            Sesión iniciada como <b>@{user.username}</b>
+            Sesión iniciada como <b>{user.username}</b>
           </p>
           <button className="btn-primary" onClick={() => navigate("/me")}>
             Ir a Mi Cuenta
