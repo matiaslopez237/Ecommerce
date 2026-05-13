@@ -989,3 +989,31 @@ p { margin: 0; }
   .tratamientos-grid { grid-template-columns: 1fr; }
   .servicio-hero h1 { font-size: 26px; }
 }
+
+/* ── SKELETON LOADER ── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton-box,
+.skeleton-line {
+  background: linear-gradient(90deg, #ede8e3 25%, #f7f3ef 50%, #ede8e3 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+.skeleton-card {
+  pointer-events: none;
+  cursor: default;
+}
+
+.skeleton-card .product-card-img {
+  height: 200px;
+}
+
+.skeleton-line {
+  height: 12px;
+  display: block;
+}

@@ -19,7 +19,8 @@ export default function Products() {
   const isAdmin = user?.role === "ADMIN";
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError]       = useState<string | null>(null);
+  const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
     async function load() {
@@ -28,6 +29,8 @@ export default function Products() {
         setProducts(res.data);
       } catch {
         setError("No se pudieron cargar los servicios");
+      } finally {
+        setLoading(false);
       }
     }
     load();
@@ -62,7 +65,18 @@ export default function Products() {
         )}
 
         <div className="products-grid">
-          {products.map((p) => (
+          {loading && Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="product-card skeleton-card">
+              <div className="product-card-img skeleton-box" />
+              <div className="product-card-body">
+                <div className="skeleton-line" style={{ width: "50%", marginBottom: 8 }} />
+                <div className="skeleton-line" style={{ width: "90%", marginBottom: 4 }} />
+                <div className="skeleton-line" style={{ width: "70%", marginBottom: 12 }} />
+                <div className="skeleton-line" style={{ width: "40%" }} />
+              </div>
+            </div>
+          ))}
+          {!loading && products.map((p) => (
             <Link
               to={`/products/${p.id}`}
               key={p.id}
@@ -127,9 +141,9 @@ export default function Products() {
           ))}
         </div>
 
-        {products.length === 0 && !error && (
+        {!loading && products.length === 0 && !error && (
           <p style={{ color: "var(--text-muted)", textAlign: "center", marginTop: 60 }}>
-            Cargando servicios...
+            No hay servicios disponibles.
           </p>
         )}
       </div>
