@@ -1,22 +1,28 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
-import { MailIcon } from "../components/Icons";
+import { useAuth } from "../auth/AuthContext";
 
 export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { loginWithToken } = useAuth();
+  const navigate = useNavigate();
+
+  const [username, setUsername]   = useState("");
+  const [password, setPassword]   = useState("");
   const [password2, setPassword2] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
-  const [done, setDone] = useState(false);
+  const [loading, setLoading]     = useState(false);
+  const [msg, setMsg]             = useState<{ text: string; ok: boolean } | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
 
-    if (!email.trim() || !password) {
-      setMsg({ text: "Completá email y contraseña", ok: false });
+    if (!username.trim() || !password) {
+      setMsg({ text: "Completá usuario y contraseña", ok: false });
+      return;
+    }
+    if (username.trim().length < 3) {
+      setMsg({ text: "El usuario debe tener al menos 3 caracteres", ok: false });
       return;
     }
     if (password.length < 6) {
@@ -30,40 +36,18 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await api.post("/auth/register", { email: email.trim(), password });
-      setDone(true);
+      const res = await api.post("/auth/register", {
+        username: username.trim().toLowerCase(),
+        password,
+      });
+      // Login automático al registrarse
+      await loginWithToken(res.data.token);
+      navigate("/me");
     } catch (e: any) {
       setMsg({ text: e?.response?.data?.error ?? "No se pudo registrar", ok: false });
     } finally {
       setLoading(false);
     }
-  }
-
-  if (done) {
-    return (
-      <div className="form-page">
-        <div className="form-card" style={{ textAlign: "center" }}>
-          <div style={{
-            width: 72, height: 72, borderRadius: "50%",
-            background: "var(--primary-light)", display: "flex",
-            alignItems: "center", justifyContent: "center",
-            margin: "0 auto 20px",
-          }}>
-            <MailIcon size={32} color="var(--primary)" />
-          </div>
-          <p className="form-title">¡Revisá tu email!</p>
-          <p className="form-subtitle" style={{ marginBottom: 24 }}>
-            Te mandamos un link a <strong>{email}</strong> para confirmar tu cuenta.
-          </p>
-          <p style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.6 }}>
-            Si no lo ves en la bandeja principal, revisá la carpeta de spam.
-          </p>
-          <p className="form-link" style={{ marginTop: 24 }}>
-            <Link to="/login">Volver al inicio de sesión</Link>
-          </p>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -83,11 +67,11 @@ export default function Register() {
         <form onSubmit={submit}>
           <input
             className="form-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Correo electrónico"
-            type="email"
-            autoComplete="email"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Nombre de usuario"
+            type="text"
+            autoComplete="username"
             required
           />
           <input
@@ -117,6 +101,10 @@ export default function Register() {
             <p className={msg.ok ? "form-msg-ok" : "form-msg-err"}>{msg.text}</p>
           )}
         </form>
+
+        <p style={{ fontSize: 12, color: "var(--text-muted)", textAlign: "center", marginTop: 12, lineHeight: 1.5 }}>
+          Solo letras, números, puntos y guiones bajos
+        </p>
 
         <p className="form-link">
           ¿Ya tenés cuenta? <Link to="/login">Iniciar sesión</Link>

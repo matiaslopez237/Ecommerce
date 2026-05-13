@@ -91,10 +91,11 @@ export default function Cart() {
     });
 
     const msg = [
-      "Hola! 👋 Quisiera hacer el siguiente pedido:",
+      "Hola! 👋 Quisiera hacer el siguiente pedido, vengo desde la web:",
       "",
       "*CMSD — Centro Médico Santo Domingo*",
       "",
+      "*Productos:*",
       ...lines,
       "",
       `*Total: $${formatMoney(total)}*`,

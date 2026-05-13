@@ -1,38 +1,59 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { Router } from "express";
-import prisma from "../prisma.js";
+import bcrypt from "bcryptjs";
+import prisma from "../prisma.js"; // o donde lo exportes
+import { requireAuth } from "../middleware/requireAuth.js";
 const router = Router();
-// Crear usuario
-router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
+router.post("/", async (req, res) => {
     try {
-        const user = yield prisma.user.create({
-            data: { email, password },
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ error: "Faltan campos: email y password" });
+        }
+        // Hasheo
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await prisma.user.create({
+            data: {
+                email,
+                password: hashedPassword,
+                // points: opcional, si querés permitirlo
+            },
+            // OJO: no devolver password
+            select: { id: true, email: true, points: true, createdAt: true },
         });
-        res.status(201).json(user);
+        return res.status(201).json(user);
     }
-    catch (error) {
-        res.status(400).json({ error: "No se pudo crear el usuario" });
+    catch (err) {
+        // Email duplicado (unique)
+        if (err?.code === "P2002") {
+            return res.status(409).json({ error: "El email ya está registrado" });
+        }
+        console.error(err);
+        return res.status(500).json({ error: "Error interno" });
     }
-}));
-// Obtener usuario
-router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = Number(req.params.id);
-    const user = yield prisma.user.findUnique({
-        where: { id },
+});
+router.get("/me", requireAuth, async (req, res) => {
+    const userId = req.user?.sub;
+    if (!userId)
+        return res.status(401).json({ error: "Token inválido" });
+    const user = await prisma.user.findUnique({
+        where: { id: Number(userId) },
+        select: { id: true, email: true, points: true, createdAt: true, role: true }, // sin password
     });
-    if (!user) {
+    if (!user)
         return res.status(404).json({ error: "Usuario no encontrado" });
-    }
-    res.json(user);
-}));
+    return res.json(user);
+});
+router.get("/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id))
+        return res.status(400).json({ error: "ID inválido" });
+    const user = await prisma.user.findUnique({
+        where: { id },
+        select: { id: true, email: true, points: true, createdAt: true },
+    });
+    if (!user)
+        return res.status(404).json({ error: "Usuario no encontrado" });
+    return res.json(user);
+});
 export default router;
 //# sourceMappingURL=users.js.map

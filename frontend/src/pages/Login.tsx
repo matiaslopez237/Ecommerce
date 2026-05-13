@@ -6,20 +6,23 @@ export default function Login() {
   const { login, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword]  = useState("");
+  const [msg, setMsg]            = useState<{ text: string; ok: boolean } | null>(null);
+  const [loading, setLoading]    = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
+    setLoading(true);
     try {
-      await login(email, password);
-      setMsg({ text: "Ingreso exitoso", ok: true });
+      await login(username, password);
       navigate("/me");
     } catch (e: any) {
       const serverMsg = e?.response?.data?.error;
-      setMsg({ text: serverMsg ?? "Email o contraseña incorrectos", ok: false });
+      setMsg({ text: serverMsg ?? "Usuario o contraseña incorrectos", ok: false });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -36,7 +39,7 @@ export default function Login() {
           </div>
           <p className="form-title">¡Bienvenido!</p>
           <p className="form-subtitle">
-            Sesión iniciada como <b>{user.email}</b>
+            Sesión iniciada como <b>@{user.username}</b>
           </p>
           <button className="btn-primary" onClick={() => navigate("/me")}>
             Ir a Mi Cuenta
@@ -70,11 +73,11 @@ export default function Login() {
         <form onSubmit={handleLogin}>
           <input
             className="form-input"
-            placeholder="Correo electrónico"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
+            placeholder="Usuario"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
             required
           />
           <input
@@ -86,8 +89,8 @@ export default function Login() {
             autoComplete="current-password"
             required
           />
-          <button className="btn-primary" type="submit">
-            Ingresar
+          <button className="btn-primary" type="submit" disabled={loading}>
+            {loading ? "Ingresando..." : "Ingresar"}
           </button>
         </form>
 

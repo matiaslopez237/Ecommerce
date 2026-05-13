@@ -39,6 +39,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../frontend/src/routes/AdminRoute.tsx"],
   "exclude": ["node_modules"]
 }

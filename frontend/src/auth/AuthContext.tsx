@@ -3,18 +3,17 @@ import { api } from "../api/client";
 
 type MeUser = {
   id: number;
-  email: string;
+  username: string;
   points: number;
   role: "USER" | "ADMIN";
   createdAt: string;
   updatedAt?: string;
 };
 
-
 type AuthContextType = {
   user: MeUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   loginWithToken: (token: string) => Promise<void>;
   logout: () => void;
   refreshMe: () => Promise<void>;
@@ -46,8 +45,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function login(email: string, password: string) {
-    const res = await api.post("/auth/login", { email, password });
+  async function login(username: string, password: string) {
+    const res = await api.post("/auth/login", { username, password });
     localStorage.setItem("token", res.data.token);
     await refreshMe();
   }
