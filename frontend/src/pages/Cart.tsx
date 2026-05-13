@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 const WHATSAPP_NUMBER = "5492995502644";
 
@@ -26,6 +27,7 @@ function formatMoney(n: number) {
 }
 
 export default function Cart() {
+  const { user } = useAuth();
   const [items, setItems]     = useState<CartItem[]>([]);
   const [error, setError]     = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,7 +93,8 @@ export default function Cart() {
     });
 
     const msg = [
-      "Hola! 👋 Quisiera hacer el siguiente pedido, vengo desde la web:",
+      `Hola! 👋 Quisiera hacer el siguiente pedido, vengo desde la web:`,
+      `*Usuario:* ${user?.username ?? ""}`,
       "",
       "*CMSD — Centro Médico Santo Domingo*",
       "",
