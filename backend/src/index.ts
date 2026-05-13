@@ -7,11 +7,6 @@ import authRoutes from "./routes/auth.js";
 import productsRoutes from "./routes/products.js";
 import categoriesRoutes from "./routes/categories.js";
 import cartRoutes from "./routes/cart.js";
-import ordersRoutes from "./routes/orders.js";
-import adminOrdersRoutes from "./routes/adminOrders.js";
-import paymentsRoutes from "./routes/payments.js";
-import webhooksRoutes from "./routes/webhooks.js";
-import adminPaymentsRoutes from "./routes/adminPayments.js";
 
 const app = express();
 
@@ -44,16 +39,6 @@ app.use("/auth", authRoutes);
 app.use("/products", productsRoutes);
 app.use("/categories", categoriesRoutes);
 app.use("/cart", cartRoutes);
-app.use("/orders", ordersRoutes);
-app.use("/admin/orders", adminOrdersRoutes);
-app.use("/payments", paymentsRoutes);
-app.use("/webhooks", webhooksRoutes);
-app.use("/admin/payments", adminPaymentsRoutes);
-
-// ✅ Return URLs
-app.get("/payment/success", (_req, res) => res.send("Pago aprobado ✅"));
-app.get("/payment/failure", (_req, res) => res.send("Pago fallido ❌"));
-app.get("/payment/pending", (_req, res) => res.send("Pago pendiente ⏳"));
 
 // ✅ Port (Render)
 const PORT = Number(process.env.PORT) || 3000;

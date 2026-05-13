@@ -7,8 +7,6 @@ import { AuthProvider, useAuth } from "./auth/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
-import Orders from "./pages/Orders";
-import OrderDetail from "./pages/OrderDetail";
 import AdminRoute from "./routes/AdminRoute";
 import AdminProducts from "./pages/AdminProducts";
 import AdminProductEdit from "./pages/AdminProductEdit";
@@ -147,8 +145,6 @@ export default function App() {
 
           <Route path="/me" element={<ProtectedRoute><Me /></ProtectedRoute>} />
           <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-          <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-          <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
 
           <Route path="/servicios/:slug" element={<ServicioDetalle />} />
 

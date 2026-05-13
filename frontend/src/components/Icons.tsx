@@ -28,95 +28,37 @@ export function ShieldIcon({ size = 20, color = "currentColor" }: IconProps) {
   );
 }
 
-export function CheckCircleIcon({ size = 20, color = "currentColor" }: IconProps) {
-  return (
-    <svg {...d(size, color)}>
-      <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>
-  );
-}
-
-export function ClockIcon({ size = 20, color = "currentColor" }: IconProps) {
-  return (
-    <svg {...d(size, color)}>
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
-
-export function XCircleIcon({ size = 20, color = "currentColor" }: IconProps) {
-  return (
-    <svg {...d(size, color)}>
-      <circle cx="12" cy="12" r="10" />
-      <line x1="15" y1="9" x2="9" y2="15" />
-      <line x1="9" y1="9" x2="15" y2="15" />
-    </svg>
-  );
-}
-
-export function MailIcon({ size = 20, color = "currentColor" }: IconProps) {
-  return (
-    <svg {...d(size, color)}>
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-      <polyline points="22,6 12,13 2,6" />
-    </svg>
-  );
-}
-
-export function PackageIcon({ size = 20, color = "currentColor" }: IconProps) {
-  return (
-    <svg {...d(size, color)}>
-      <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" />
-      <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
-      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-      <line x1="12" y1="22.08" x2="12" y2="12" />
-    </svg>
-  );
-}
-
 /* ── Me page action icons ── */
 
 export function CartIcon({ size = 20, color = "currentColor" }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 2H3L1 9v1h22V9L21 2h-3" />
-      <path d="M1 10v9a2 2 0 002 2h18a2 2 0 002-2v-9" />
-      <circle cx="9" cy="20" r="1.5" fill={color} stroke="none" />
-      <circle cx="15" cy="20" r="1.5" fill={color} stroke="none" />
-      <path d="M3 6h18" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2.5 3.5h2.6l1 3m0 0 2 8.4a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 1.95-1.55L21.5 6.5h-15" />
+      <circle cx="9.5" cy="20" r="1.6" />
+      <circle cx="17.5" cy="20" r="1.6" />
     </svg>
   );
 }
 
-export function OrdersListIcon({ size = 20, color = "currentColor" }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9l4-4 4 4" />
-      <path d="M7 5v8" />
-      <rect x="13" y="3" width="8" height="5" rx="1" />
-      <path d="M13 11h8M13 15h5M13 19h7" />
-    </svg>
-  );
-}
 
 export function BriefcaseSearchIcon({ size = 20, color = "currentColor" }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="7" width="20" height="14" rx="2" />
-      <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
-      <circle cx="11" cy="14" r="3" />
-      <path d="M13.27 16.27l2.73 2.73" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 8.5h11a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1Z" />
+      <path d="M8 8.5V7a2.5 2.5 0 0 1 5 0v1.5" />
+      <circle cx="17.2" cy="15.2" r="3.6" fill="var(--primary-light, #f5ede3)" />
+      <path d="m20 18 2.2 2.2" />
+      <path d="M17.2 13.4l1.7.95v1.9l-1.7.95-1.7-.95v-1.9z" />
+      <path d="M17.2 15.3v1.9M15.5 14.35l1.7.95 1.7-.95" />
     </svg>
   );
 }
 
 export function UserIcon({ size = 20, color = "currentColor" }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" />
+      <path d="M3.5 20.5c1.4-3.7 4.7-5.7 8.5-5.7s7.1 2 8.5 5.7" />
     </svg>
   );
 }

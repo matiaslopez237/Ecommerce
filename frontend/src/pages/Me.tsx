@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { Link } from "react-router-dom";
-import { LogOutIcon, WrenchIcon, ShieldIcon, CartIcon, OrdersListIcon, BriefcaseSearchIcon, UserIcon } from "../components/Icons";
+import { LogOutIcon, WrenchIcon, ShieldIcon, CartIcon, BriefcaseSearchIcon, UserIcon } from "../components/Icons";
 
 function formatDate(s?: string) {
   if (!s) return "-";
@@ -133,10 +133,6 @@ export default function Me() {
             <Link to="/products" style={linkBtnStyle}>
               <IconBox icon={<BriefcaseSearchIcon size={18} color="var(--primary)" />} />
               Ver productos
-            </Link>
-            <Link to="/orders" style={linkBtnStyle}>
-              <IconBox icon={<OrdersListIcon size={18} color="var(--primary)" />} />
-              Mis órdenes
             </Link>
             <Link to="/cart" style={linkBtnStyle}>
               <IconBox icon={<CartIcon size={18} color="var(--primary)" />} />
