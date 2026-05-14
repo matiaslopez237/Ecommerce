@@ -137,7 +137,6 @@ export default function Home() {
             <Link to="/servicios/estetica-corporal">
               <button className="offer-shop-btn">Ver Tratamientos</button>
             </Link>
-            <span className="offer-icon">💆</span>
           </div>
           <div className="offer-card dark">
             <h3>Ginecología y Estética Médica</h3>
@@ -145,7 +144,6 @@ export default function Home() {
             <Link to="/servicios/ginecologia">
               <button className="offer-shop-btn">Ver Más</button>
             </Link>
-            <span className="offer-icon">🩺</span>
           </div>
         </div>
       </section>
@@ -166,13 +164,13 @@ export default function Home() {
           {SERVICIOS.map((s) => (
             <Link to={`/servicios/${s.slug}`} key={s.slug}>
               <div className="specialist-chip">
-                {s.icono} {s.nombre}
+                {s.nombre}
               </div>
             </Link>
           ))}
           <Link to="/products">
             <div className="specialist-chip" style={{ borderColor: "var(--primary)", color: "var(--primary)", fontWeight: 700 }}>
-              🛍 Catálogo de Productos
+              Catálogo de Productos
             </div>
           </Link>
         </div>
