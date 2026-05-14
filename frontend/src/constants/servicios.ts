@@ -27,7 +27,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "estetica-facial",
     nombre: "Estética Facial",
     icono: "✨",
-    imagen: "/iconos/estetica-facial.png",
+    imagen: "/iconos/estetica-facial.svg",
     descripcionCorta:
       "Tratamientos faciales profesionales para cuidar, rejuvenecer y realzar tu piel",
     tratamientos: [
@@ -187,7 +187,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "estetica-corporal",
     nombre: "Estética Corporal",
     icono: "💆",
-    imagen: "/iconos/estetica-corporal.png",
+    imagen: "/iconos/estetica-corporal.svg",
     descripcionCorta:
       "Tratamientos corporales para reducir, reafirmar y modelar tu figura",
     tratamientos: [
@@ -294,7 +294,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "depilacion-laser",
     nombre: "Depilación Definitiva Láser",
     icono: "⚡",
-    imagen: "/iconos/depilacion-laser.png",
+    imagen: "/iconos/depilacion-laser.svg",
     descripcionCorta:
       "Disfrutá de una piel suave y olvidate de depilarte constantemente",
     descripcionLarga:
@@ -341,7 +341,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "ginecologia",
     nombre: "Ginecología y Estética Médica",
     icono: "🩺",
-    imagen: "/iconos/ginecologia.png",
+    imagen: "/iconos/ginecologia.svg",
     descripcionCorta:
       "Atención ginecológica integral y tratamientos de medicina estética avanzada",
     tratamientos: [
@@ -480,7 +480,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "quiropraxia",
     nombre: "Quiropraxia",
     icono: "🦴",
-    imagen: "/iconos/quiropraxia.png",
+    imagen: "/iconos/quiropraxia.svg",
     descripcionCorta:
       "Detectamos, analizamos y corregimos subluxaciones vertebrales para mejorar tu calidad de vida",
     descripcionLarga:
@@ -527,7 +527,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "odontologia",
     nombre: "Odontología",
     icono: "🦷",
-    imagen: "/iconos/odontologia.png",
+    imagen: "/iconos/odontologia.svg",
     descripcionCorta:
       "Odontología general y especializada con la última tecnología en equipamiento",
     tratamientos: [
@@ -593,7 +593,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "kinesiologia",
     nombre: "Kinesiología y Rehabilitación",
     icono: "🏃",
-    imagen: "/iconos/kinesiologia.png",
+    imagen: "/iconos/kinesiologia.svg",
     descripcionCorta:
       "Rehabilitación profesional con atención de obras sociales y particular",
     descripcionLarga:
@@ -646,7 +646,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "medicina-general",
     nombre: "Medicina General",
     icono: "🏥",
-    imagen: "/iconos/medicina-general.png",
+    imagen: "/iconos/medicina-general.svg",
     descripcionCorta:
       "Medicina integrativa, general y clínica con atención de obras sociales",
     descripcionLarga:
