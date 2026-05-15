@@ -31,6 +31,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--bg);
+  background-image: url('/textura-ondas.svg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
   display: block;
   overflow-x: hidden;
 }
@@ -887,7 +891,11 @@ p { margin: 0; }
 
 /* Service detail page */
 .servicio-hero {
-  background: linear-gradient(135deg, var(--primary-light) 0%, white 60%);
+  background-color: var(--primary-light);
+  background-image: url('/textura-ondas.svg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
   padding: 64px 24px;
   text-align: center;
   border-bottom: 1px solid var(--border);
