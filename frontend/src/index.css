@@ -31,10 +31,6 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--bg);
-  background-image: url('/textura-ondas.svg');
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: center;
   display: block;
   overflow-x: hidden;
 }
@@ -336,8 +332,20 @@ p { margin: 0; }
   padding: 56px 24px;
 }
 
-.home-section.bg-white { background: rgba(255, 255, 255, 0.82); }
-.home-section.bg-cream { background: rgba(245, 240, 234, 0.80); }
+.home-section.bg-white {
+  background-color: white;
+  background-image: url('/textura-ondas.svg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+}
+.home-section.bg-cream {
+  background-color: var(--bg);
+  background-image: url('/textura-ondas.svg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+}
 
 .section-header {
   max-width: 1280px;

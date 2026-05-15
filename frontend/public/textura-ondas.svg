@@ -1,25 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
-  <!-- Onda 1 - shadow + highlight -->
+  <!-- Onda 1 -->
   <path d="M-200 160 C150 30 420 320 780 180 S1150 30 1650 160"
-    stroke="#c4b09a" stroke-width="340" fill="none" stroke-linecap="round" opacity="0.08"/>
+    stroke="#b89d82" stroke-width="340" fill="none" stroke-linecap="round" opacity="0.13"/>
   <path d="M-200 160 C150 30 420 320 780 180 S1150 30 1650 160"
-    stroke="#ffffff" stroke-width="150" fill="none" stroke-linecap="round" opacity="0.50"/>
+    stroke="#f5ede3" stroke-width="130" fill="none" stroke-linecap="round" opacity="0.70"/>
 
   <!-- Onda 2 -->
   <path d="M-200 500 C250 340 580 680 920 500 S1280 340 1650 500"
-    stroke="#c4b09a" stroke-width="310" fill="none" stroke-linecap="round" opacity="0.07"/>
+    stroke="#b89d82" stroke-width="310" fill="none" stroke-linecap="round" opacity="0.11"/>
   <path d="M-200 500 C250 340 580 680 920 500 S1280 340 1650 500"
-    stroke="#ffffff" stroke-width="130" fill="none" stroke-linecap="round" opacity="0.45"/>
+    stroke="#f5ede3" stroke-width="110" fill="none" stroke-linecap="round" opacity="0.65"/>
 
   <!-- Onda 3 -->
   <path d="M-200 850 C200 700 500 1020 820 860 S1180 700 1650 850"
-    stroke="#c4b09a" stroke-width="290" fill="none" stroke-linecap="round" opacity="0.08"/>
+    stroke="#b89d82" stroke-width="290" fill="none" stroke-linecap="round" opacity="0.12"/>
   <path d="M-200 850 C200 700 500 1020 820 860 S1180 700 1650 850"
-    stroke="#ffffff" stroke-width="120" fill="none" stroke-linecap="round" opacity="0.48"/>
+    stroke="#f5ede3" stroke-width="115" fill="none" stroke-linecap="round" opacity="0.68"/>
 
-  <!-- Onda diagonal extra para profundidad -->
-  <path d="M800 -50 C950 200 850 500 1000 750 S1100 1000 900 1100"
-    stroke="#c4b09a" stroke-width="200" fill="none" stroke-linecap="round" opacity="0.04"/>
-  <path d="M800 -50 C950 200 850 500 1000 750 S1100 1000 900 1100"
-    stroke="#ffffff" stroke-width="80" fill="none" stroke-linecap="round" opacity="0.30"/>
+  <!-- Onda diagonal sutil -->
+  <path d="M850 -80 C1020 220 880 520 1050 800 S1150 1000 950 1100"
+    stroke="#b89d82" stroke-width="180" fill="none" stroke-linecap="round" opacity="0.07"/>
+  <path d="M850 -80 C1020 220 880 520 1050 800 S1150 1000 950 1100"
+    stroke="#f5ede3" stroke-width="70" fill="none" stroke-linecap="round" opacity="0.50"/>
 </svg>
