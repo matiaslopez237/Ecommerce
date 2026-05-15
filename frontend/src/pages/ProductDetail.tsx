@@ -193,7 +193,7 @@ export default function ProductDetail() {
               transition: "background 0.2s",
             }}
           >
-            {outOfStock ? "Sin stock" : added ? "✅ Agregado al carrito" : "Agregar al carrito"}
+            {outOfStock ? "Sin stock" : added ? "Agregado al carrito" : "Agregar al carrito"}
           </button>
 
           {isAdmin && (
@@ -209,7 +209,7 @@ export default function ProductDetail() {
                 fontWeight: 600,
               }}
             >
-              ✏️ Editar producto (admin)
+              Editar producto (admin)
             </Link>
           )}
         </div>
