@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 
@@ -21,6 +21,7 @@ const money = (v: any) => {
 export default function ProductDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const isAdmin = user?.role === "ADMIN";
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -47,6 +48,10 @@ export default function ProductDetail() {
 
   async function addToCart() {
     if (!product) return;
+    if (!user) {
+      navigate("/login");
+      return;
+    }
     try {
       await api.post("/cart", { productId: product.id, quantity: qty });
       setAdded(true);
@@ -193,7 +198,7 @@ export default function ProductDetail() {
               transition: "background 0.2s",
             }}
           >
-            {outOfStock ? "Sin stock" : added ? "Agregado al carrito" : "Agregar al carrito"}
+            {outOfStock ? "Sin stock" : !user ? "Iniciá sesión para comprar" : added ? "¡Agregado!" : "Agregar al carrito"}
           </button>
 
           {isAdmin && (
